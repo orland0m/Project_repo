@@ -1,6 +1,11 @@
-#include "http-response.h"
-#include "http-request.h"
+/*
+	Prototype function to get data fro cache
+*/
 
-HttpResponse * getFromCache(HttpRequest * request){
-	
-}
+#ifndef _CACHE_
+#define _CACHE_
+
+string GetFromCache(string);
+void SaveToCache(char *);
+
+#endif

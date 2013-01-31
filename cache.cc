@@ -19,8 +19,7 @@ time_t GMTToSeconds(const char *date){
     if((char *)strptime(date,"%a, %d %b %Y %T GMT",&time_rt)){
     	return mktime(&time_rt);
     }
-    return time(NULL)+1; // if there is a badly formed date, 
-    					//  we asume the document is not expired
+    return 0;
 }
 
 /**
@@ -50,7 +49,6 @@ const char * GetFromCache(string file){
   		}catch (int e){
   		}
 	}
-	//cout << "Inexisting file";
 	return NULL;
 }
 

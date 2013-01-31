@@ -50,6 +50,7 @@ const char * GetFromCache(string file){
   		}catch (int e){
   		}
 	}
+	//cout << "Inexisting file";
 	return NULL;
 }
 

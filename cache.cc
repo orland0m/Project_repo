@@ -34,12 +34,11 @@ int isExpired(char * date){
 
 char * GetFromCache(string file){
 	string data = getData(file); 
-	size_t dataLength = (size_t)data.length();
+	int dataLength = data.length();
 	if(dataLength>1){
 		try{
 			HttpResponse * response = new HttpResponse;
-			char * tmp = data.c_str();
-			response -> ParseResponse(tmp,dataLength);
+			response -> ParseResponse(data.c_str(),dataLength);
 			if(isExpired(response -> FindHeader("Expires"))){
 				//remove(file);
 				delete response;

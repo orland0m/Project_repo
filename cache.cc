@@ -26,12 +26,12 @@ time_t GMTToSeconds(const char *date){
 	Tests whether a date has expired
 */
 int isExpired(string date){
-	time_t now = time(NULL);
+	time_t now = gmtime(time(NULL));
 	time_t docs = GMTToSeconds(date.c_str());
-	struct tm one = localtime(&now);
-	struct tm two = localtime(&docs);
-	cout << "Local: " << asctime(one) << endl ;
-	cout << "File: " << asctime(two) << endl ;
+	struct tm* one = localtime(&now);
+	struct tm* two = localtime(&docs);
+	cout << "Local: " << one << endl ;
+	cout << "File: " << two << endl ;
 	return now>docs;
 }
 

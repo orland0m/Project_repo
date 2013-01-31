@@ -39,8 +39,8 @@ string GetFromCache(string file){
 	if(dataLength>1){
 		try{
 			HttpResponse * response = new HttpResponse;
-			response.ParseResponse(data,dataLength);
-			if(isExpired(response.FindHeader("Expires"))){
+			response->ParseResponse(data,dataLength);
+			if(isExpired(response->FindHeader("Expires"))){
 				//remove(file);
 				delete response;
 				cout << "File removed!" << endl;
@@ -55,7 +55,7 @@ string GetFromCache(string file){
 }
 
 
-string getData(const char *filename){
+string getData(string filename){
   std::ifstream in(filename, std::ios::in | std::ios::binary);
   if (in){
     string contents;

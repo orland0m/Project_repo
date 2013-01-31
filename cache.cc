@@ -33,7 +33,7 @@ int isExpired(char * date){
 	return now>docs;
 }
 
-string GetFromCache(string file){
+char * GetFromCache(string file){
 	string data = getData(file); 
 	int dataLength = data.length();
 	if(dataLength>1){
@@ -46,7 +46,7 @@ string GetFromCache(string file){
 				cout << "File removed!" << endl;
 			}else{
 				delete response;
-    			return data;
+    			return data.c_str;
     		}
   		}catch (int e){
   		}

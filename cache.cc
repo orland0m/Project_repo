@@ -26,9 +26,9 @@ time_t GMTToSeconds(const char *date){
 /**
 	Tests whether a date has expired
 */
-int isExpired(char * date){
+int isExpired(string date){
 	time_t now = time(NULL);
-	time_t docs = GMTToSeconds(date);
+	time_t docs = GMTToSeconds(date.c_str());
 	return now>docs;
 }
 

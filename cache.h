@@ -7,7 +7,7 @@
 #include <iostream>
 using namespace std;
 
-char * GetFromCache(string);
+const char * GetFromCache(string);
 void SaveToCache(char *);
 
 #endif

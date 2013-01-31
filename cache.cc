@@ -32,7 +32,7 @@ int isExpired(string date){
 	return now>docs;
 }
 
-char * GetFromCache(string file){
+const char * GetFromCache(string file){
 	string data = getData(file); 
 	int dataLength = data.length();
 	if(dataLength>1){

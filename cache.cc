@@ -9,7 +9,7 @@
 #include <ctime>
 #include <clocale>
 using namespace std;
-string getData(const char *);
+string getData(string);
 
 /**
 	Used to get the time in seconds of an HTML-date

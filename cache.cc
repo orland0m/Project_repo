@@ -38,7 +38,8 @@ char * GetFromCache(string file){
 	if(dataLength>1){
 		try{
 			HttpResponse * response = new HttpResponse;
-			response -> ParseResponse((const char *)(data.c_str()),(size_t)dataLength);
+			char * tmp = data.c_str()
+			response -> ParseResponse(tmp,dataLength);
 			if(isExpired(response -> FindHeader("Expires"))){
 				//remove(file);
 				delete response;

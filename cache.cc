@@ -1,5 +1,5 @@
 /*
-	Implementation of the function get from cache
+	Implementation of the function GetFromCache
 */
 
 #include "http-response.h"
@@ -9,6 +9,7 @@
 #include <ctime>
 #include <clocale>
 using namespace std;
+
 string getData(string);
 
 /**
@@ -26,16 +27,21 @@ time_t GMTToSeconds(const char *date){
 	Tests whether a date has expired
 */
 int isExpired(string date){
-	time_t now = gmtime(time(NULL));
+	time_t rawtime;
+	struct tm * ptm;
+	time ( &rawtime );
+	ptm = gmtime ( &rawtime );
+	time_t now = mktime(ptm);
 	time_t docs = GMTToSeconds(date.c_str());
-	struct tm* one = localtime(&now);
-	struct tm* two = localtime(&docs);
-	cout << "Local: " << one << endl ;
-	cout << "File: " << two << endl ;
 	return now>docs;
 }
 
-const char * GetFromCache(string file){
+/**
+	First it gets the data from the file, if there was an error the length should be less
+	than one. Then it tries parsing to get the expiration date. If it's expired and the
+	flag is turned on, then delete the file, else return the data that the file has.
+*/
+const char * GetFromCache(string file, int o_del){
 	string data = getData(file); 
 	int dataLength = data.length();
 	if(dataLength>1){
@@ -43,9 +49,11 @@ const char * GetFromCache(string file){
 			HttpResponse * response = new HttpResponse;
 			response -> ParseResponse(data.c_str(),dataLength);
 			if(isExpired(response -> FindHeader("Expires"))){
-				//remove(file);
+				if(o_del){
+					remove(file);
+					cout << "cache.cc: Obsolete file removed: " << file << endl;
+				}
 				delete response;
-				cout << "cache.cc: Obsolete file removed: " << file << endl;
 			}else{
 				delete response;
     			return data.c_str();

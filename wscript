@@ -28,6 +28,7 @@ def build (env):
             # Put additional files here
             # ...
             #
+            "web-request.cc",
             "cache.cc",
             "http-proxy.cc", # main() function is here
             "http-headers.cc",

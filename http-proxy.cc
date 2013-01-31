@@ -1,17 +1,17 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #include <iostream>
-#include "cache.h"
+#include "web-request.h"
 
 using namespace std;
 
 int main (int argc, char *argv[]){
-	setlocale(LC_ALL,"GMT"); // Leave alone, it's used to change the Locale of this program to GMT
-	const char * data = GetFromCache("cache/www.google.com/index.html");
+	string file = "cache/www.google.com/index.html"; // right now it works with files only
+	const char * data = GetRequestedPage(file.c_str());
 	if(data){
-		cout << "Bingo! It's in cache..." << endl;
+		cout << "Bingo! your file is in: " << file << endl;
 	}else{
-		cout << "Oops... This is embarrassing. We don't have that file" << endl;
+		cout << "Oops... This is embarrassing. We don't have that file yet" << endl;
 	}
 	return 0;
 }

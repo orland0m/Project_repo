@@ -1,5 +1,3 @@
-/*Orlando*/
-
 /* URI Grammar
 
 URI = [ absoluteURI | relativeURI ] [ "#" fragment ]

@@ -45,7 +45,7 @@ char * GetFromCache(string file){
 				cout << "File removed!" << endl;
 			}else{
 				delete response;
-    			return data.c_str;
+    			return data.c_str();
     		}
   		}catch (int e){
   		}

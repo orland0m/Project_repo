@@ -6,6 +6,7 @@
 using namespace std;
 
 int main (int argc, char *argv[]){
+	setlocale(LC_ALL,"GMT"); // Leave alone, it's used to change the Locale of this program to GMT
 	char * data = GetFromCache("www.google.com/index.html");
 	if(data){
 		cout << "Bingo! It's in cache..." << endl;

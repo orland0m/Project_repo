@@ -27,7 +27,6 @@ time_t GMTToSeconds(const char *date){
 	Tests whether a date has expired
 */
 int isExpired(char * date){
-	setlocale(LC_ALL,"GMT");
 	time_t now = time(NULL);
 	time_t docs = GMTToSeconds(date);
 	return now>docs;
@@ -35,12 +34,12 @@ int isExpired(char * date){
 
 char * GetFromCache(string file){
 	string data = getData(file); 
-	int dataLength = data.length();
+	size_t dataLength = (size_t)data.length();
 	if(dataLength>1){
 		try{
 			HttpResponse * response = new HttpResponse;
-			response->ParseResponse(data.c_str,dataLength);
-			if(isExpired(response->FindHeader("Expires"))){
+			response -> ParseResponse(data.c_str,dataLength);
+			if(isExpired(response -> FindHeader("Expires"))){
 				//remove(file);
 				delete response;
 				cout << "File removed!" << endl;

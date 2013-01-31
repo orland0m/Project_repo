@@ -9,6 +9,7 @@
 #include <ctime>
 #include <clocale>
 using namespace std;
+string getData(const char *);
 
 /**
 	Used to get the time in seconds of an HTML-date
@@ -37,12 +38,14 @@ string GetFromCache(string file){
 	int dataLength = data.length();
 	if(dataLength>1){
 		try{
-			HttpResponse response();
-			response::ParseResponse(data,dataLength);
-			if(isExpired(response::FindHeader("Expires"))){
+			HttpResponse * response = new HttpResponse;
+			response.ParseResponse(data,dataLength);
+			if(isExpired(response.FindHeader("Expires"))){
 				//remove(file);
+				delete response;
 				cout << "File removed!" << endl;
 			}else{
+				delete response;
     			return data;
     		}
   		}catch (int e){

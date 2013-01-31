@@ -28,6 +28,10 @@ time_t GMTToSeconds(const char *date){
 int isExpired(string date){
 	time_t now = time(NULL);
 	time_t docs = GMTToSeconds(date.c_str());
+	struct tm one = localtime(&now);
+	struct tm two = localtime(&docs);
+	cout << "Local: " << asctime(one) << endl ;
+	cout << "File: " << asctime(two) << endl ;
 	return now>docs;
 }
 
@@ -41,7 +45,7 @@ const char * GetFromCache(string file){
 			if(isExpired(response -> FindHeader("Expires"))){
 				//remove(file);
 				delete response;
-				cout << "File removed!" << endl;
+				cout << "cache.cc: Obsolete file removed: " << file << endl;
 			}else{
 				delete response;
     			return data.c_str();

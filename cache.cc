@@ -55,7 +55,7 @@ const char * GetFromCache(string file){
 
 
 string getData(string filename){
-  std::ifstream in(filename, std::ios::in | std::ios::binary);
+  std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
   if (in){
     string contents;
     in.seekg(0, std::ios::end);

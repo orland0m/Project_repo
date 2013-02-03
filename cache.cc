@@ -29,7 +29,7 @@ time_t GMTToSeconds(const char *date){
 int isExpired(string date){
 	time_t rawtime;
 	struct tm * ptm;
-	time ( &rawtime );
+	time(&rawtime);
 	ptm = gmtime ( &rawtime );
 	time_t now = mktime(ptm);
 	time_t docs = GMTToSeconds(date.c_str());
@@ -41,22 +41,18 @@ int isExpired(string date){
 	than one. Then it tries parsing to get the expiration date. If it's expired and the
 	flag is turned on, then delete the file, else return the data that the file has.
 */
-const char * GetFromCache(string file, int o_del){
-	string data = getData(file); 
+HttpResponse * GetFromCache(HttpRequest * request, string &expires){
+	expires = NULL;
+	string data = getData(request->GetHost()+request->GetPath()); 
 	int dataLength = data.length();
 	if(dataLength>1){
 		try{
 			HttpResponse * response = new HttpResponse;
 			response -> ParseResponse(data.c_str(),dataLength);
-			if(isExpired(response -> FindHeader("Expires"))){
-				if(o_del){
-					remove(file);
-					cout << "cache.cc: Obsolete file removed: " << file << endl;
-				}
+			if(isExpired(expires = response -> FindHeader("Expires"))){
 				delete response;
 			}else{
-				delete response;
-    			return data.c_str();
+    			return response;
     		}
   		}catch (int e){
   		}
@@ -64,17 +60,43 @@ const char * GetFromCache(string file, int o_del){
 	return NULL;
 }
 
+void SaveToCache(Http-Response* response, string url){
+	if(!isExpired(response -> FindHeader("Expires"))){
+		size_t length = response -> GetTotalLength();
+		char * data = (char *) malloc(length);
+		if(data){
+			data[0] = '\0';
+			response -> FormatResponse(data);
+			ofstream file;
+			file.open("cache/"+url, ios::trunc);
+			file << data;
+			free(data);
+			file.close();
+		}
+	}
+}
 
 string getData(string filename){
-  std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
+  ifstream in(filename.c_str(), ios::in | ios::binary);
   if (in){
     string contents;
-    in.seekg(0, std::ios::end);
+    in.seekg(0, ios::end);
     contents.resize(in.tellg());
-    in.seekg(0, std::ios::beg);
+    in.seekg(0, ios::beg);
     in.read(&contents[0], contents.size());
     in.close();
     return(contents);
   }
   return "";
+}
+
+
+HttpResponse * GetErrorPage(int errorNumber){
+	switch(errorNumber){
+		case 404:
+			//return GetFromCache("cache/stderr/404.html",0);
+			return NULL;
+		default:
+			return NULL;
+	}
 }

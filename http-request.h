@@ -37,7 +37,7 @@
  *      
  *      delete [] buf;
  */
-class HttpRequest : public HttpHeaders
+class    : public HttpHeaders
 {
 public:
   enum MethodEnum

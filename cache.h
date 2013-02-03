@@ -1,30 +1,41 @@
 /*
- * Functionality to retrieve and save files from/to cache
+ * Functionality to retrieve/save files from/to cache
  */
 
 #ifndef _CACHE_
 #define _CACHE_
 
 #include <iostream>
+#include "http-request.h"
 using namespace std;
 
 /**
  * GetFromCache's contract:
- * IN: It receives a string file name. That file exists in disk and is a properly formated
- *		HTTP Response from a web server.
- * 		It also receives an integer that is either 0 or 1.
- * OUT: The file contents as a character array
- * SIDE EFECTS: Side effects are avoided by setting the second argument to 0 (cero)
- *		Side effect: It parses the file to see if it has expired, in which case
- *		deletes the entry from disk, and returns NULL pointer.
+ * IN: An HTTP request. An out string.
+ * OUT: 
+ * 		Return: The HTTP Response that was stored in cache. NULL if it was expired or
+ *				It didn't exist.
+ *		Out: The second argument will hold the expiration date of this file.
  * NOTE: If the file has a badly formated 'Expires' date it's going to be
  *		treated as an expired file.
  */
-const char * GetFromCache(string, int);
+HttpResponse * GetFromCache(HttpRequest *, string &);
+
 
 /**
- * Yet to be implemented
+ * HttpResponse's contract:
+ * IN: Integer. That integer is to be a valid http error code that is already stored
+ * 		in cache.
+ * OUT: The html error page corresponding to that error code.
  */
-void SaveToCache(char *);
+
+HttpResponse * GetErrorPage(int);
+
+/**
+ * SaveToCache's contract:
+ * IN: an http response, the name of the file (server+path)
+ * NOTE: If the file has non expired date it will be stored at cache/filename
+ */
+void SaveToCache(HttpResponse *, string);
 
 #endif

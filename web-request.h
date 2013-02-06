@@ -1,6 +1,8 @@
 #ifndef _CACHE_
 #define _CACHE_
 
+#include "http-response.h"
+#include "http-request.h"
 
 /**
  * GetRequestedPage's contract:

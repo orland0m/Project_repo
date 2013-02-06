@@ -9,6 +9,7 @@
 #include <ctime>
 #include <clocale>
 using namespace std;
+#define MEM_500 (string("HTTP/1.1 500 Internal Proxy Error")).c_str()
 
 string getData(string);
 
@@ -41,7 +42,7 @@ int isExpired(string date){
 	than one. Then it tries parsing to get the expiration date. If it's expired and the
 	flag is turned on, then delete the file, else return the data that the file has.
 */
-HttpResponse * GetFromCache(HttpRequest * request, string &expires){
+HttpResponse * GetFromCache(HttpRequest * request, int returnExired){
 	expires = NULL;
 	string data = getData(request->GetHost()+request->GetPath()); 
 	int dataLength = data.length();
@@ -49,7 +50,10 @@ HttpResponse * GetFromCache(HttpRequest * request, string &expires){
 		try{
 			HttpResponse * response = new HttpResponse;
 			response -> ParseResponse(data.c_str(),dataLength);
-			if(isExpired(expires = response -> FindHeader("Expires"))){
+			if(!returnExired&&isExpired(expires = response -> FindHeader("Expires"))){
+				if((request->FindHeader("If-Modified-Since"))==""){
+					request->AddHeader("If-Modified-Since: "+expires);
+				}
 				delete response;
 			}else{
     			return response;
@@ -60,19 +64,41 @@ HttpResponse * GetFromCache(HttpRequest * request, string &expires){
 	return NULL;
 }
 
-void SaveToCache(Http-Response* response, string url){
-	if(!isExpired(response -> FindHeader("Expires"))){
-		size_t length = response -> GetTotalLength();
-		char * data = (char *) malloc(length);
-		if(data){
-			data[0] = '\0';
-			response -> FormatResponse(data);
-			ofstream file;
-			file.open("cache/"+url, ios::trunc);
-			file << data;
-			free(data);
-			file.close();
-		}
+
+Http-Response * SaveToCache(Http-Response * response, string url){
+	int code = stoi(response->GetStatusCode());
+	int twoH = 1; // it is used to use 200's save feature. That is when we have a new expiration date
+	switch(code){
+		case 304:
+			twoH = 0;
+			string data = getData(url); 
+			int dataLength = data.length();
+			if(dataLength>1){
+				string expDate = response -> FindHeader("Expires");
+				int expired = isExpired(expDate);
+				response = new HttpResponse;
+				response -> ParseResponse(data.c_str(),dataLength);
+				if(!expired){
+					response -> ModifyHeader("Expires",expDate);
+					twoH = 1;
+				}
+			}
+		case 200:
+			if(twoH&&!isExpired(response -> FindHeader("Expires"))){
+				size_t length = response -> GetTotalLength();
+				char * data = (char *) malloc(length);
+				if(data){
+					data[0] = '\0';
+					response -> FormatResponse(data);
+					ofstream file;
+					file.open("cache/"+url, ios::trunc);
+					file << data;
+					free(data);
+					file.close();
+				}
+			}
+		default:
+			return response;
 	}
 }
 
@@ -92,11 +118,18 @@ string getData(string filename){
 
 
 HttpResponse * GetErrorPage(int errorNumber){
+	string path = "cache/stderr/404.html";
 	switch(errorNumber){
 		case 404:
-			//return GetFromCache("cache/stderr/404.html",0);
-			return NULL;
 		default:
-			return NULL;
+			path = "cache/stderr/404.html";
 	}
+	string data = getData(path);
+	HttpResponse * response = new HttpResponse;;
+	if(data.length>1){
+		response -> FormatResponse(data.c_str());
+	}else{
+		response -> FormatResponse(MEM_500);
+	}
+	return response;
 }

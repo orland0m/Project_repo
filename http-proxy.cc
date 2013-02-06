@@ -2,16 +2,27 @@
 
 #include <iostream>
 #include "web-request.h"
-
+#include "cache.h"
+#include "http-request.h"
 using namespace std;
+#define ACCEPT_EXPIRED 1
 
 int main (int argc, char *argv[]){
-	string file = "cache/www.google.com/index.html"; // right now it works with files only
-	const char * data = GetRequestedPage(file.c_str());
-	if(data){
-		cout << "Bingo! your file is in: " << file << endl;
+	string rq = "GET http://www.google.com/ HTTP/1.1\r\n\r\n";
+	HttpRequest * request = new HttpRequest;
+	request -> ParseRequest(rq.c_str(), rq.length());
+	HttpResponse * r =  GetFromCache(request, !ACCEPT_EXPIRED); // get non expired file from cache
+	if(r){
+		cout << "Bingo! your file is in: cache/" << request->GetHost() << request->GetPath() << endl;
+		return 0;
 	}else{
 		cout << "Oops... This is embarrassing. We don't have that file yet" << endl;
 	}
+	cout << "Making remote request..." << endl;
+	const char * data;
+	r = GetRequestedPage(request,0); //requesting to remote server, the second argument should be a socket file descriptor
+	data = new char[r->GetTotalLength()];
+	r-> FormatResponse(data);
+	cout << "Response arrived: " << data <<endl;
 	return 0;
 }

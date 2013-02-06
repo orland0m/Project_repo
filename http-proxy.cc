@@ -19,7 +19,7 @@ int main (int argc, char *argv[]){
 		cout << "Oops... This is embarrassing. We don't have that file yet" << endl;
 	}
 	cout << "Making remote request..." << endl;
-	const char * data;
+	char * data;
 	r = GetRequestedPage(request,0); //requesting to remote server, the second argument should be a socket file descriptor
 	data = new char[r->GetTotalLength()];
 	r -> FormatResponse(data);

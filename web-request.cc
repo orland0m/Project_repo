@@ -10,7 +10,7 @@
 using namespace std;
 
 HttpResponse * GetFromRemoteServer(HttpRequest * request, int socketFd){ // GetErrorPage
-	HttpResponse * response = GetErrorPage(425); // problem processing the request
+	HttpResponse * response = GetErrorPage(404); // problem processing the request
 	char * buffer = new char[request->GetTotalLength()];
 	buffer[0] = '\0';
 	request->FormatRequest(buffer);

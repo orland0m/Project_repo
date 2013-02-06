@@ -37,12 +37,7 @@ int isExpired(string date){
 	return now>docs;
 }
 
-/**
-	First it gets the data from the file, if there was an error the length should be less
-	than one. Then it tries parsing to get the expiration date. If it's expired and the
-	flag is turned on, then delete the file, else return the data that the file has.
-*/
-HttpResponse * GetFromCache(HttpRequest * request, int returnExired){
+HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
 	expires = NULL;
 	string data = getData(request->GetHost()+request->GetPath()); 
 	int dataLength = data.length();
@@ -50,7 +45,7 @@ HttpResponse * GetFromCache(HttpRequest * request, int returnExired){
 		try{
 			HttpResponse * response = new HttpResponse;
 			response -> ParseResponse(data.c_str(),dataLength);
-			if(!returnExired&&isExpired(expires = response -> FindHeader("Expires"))){
+			if(!returnExpired&&isExpired(expires = response -> FindHeader("Expires"))){
 				if((request->FindHeader("If-Modified-Since"))==""){
 					request->AddHeader("If-Modified-Since: "+expires);
 				}

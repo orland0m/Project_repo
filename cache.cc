@@ -3,6 +3,7 @@
 */
 
 #include "http-response.h"
+#include "http-request.h"
 #include <iostream>
 #include <string>
 #include <fstream>

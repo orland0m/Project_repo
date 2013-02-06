@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include "http-request.h"
+#include "http-response.h"
 using namespace std;
 
 /**

@@ -5,7 +5,6 @@
 #include "cache.h"
 #include "http-request.h"
 using namespace std;
-#define ACCEPT_EXPIRED 1
 
 int main (int argc, char *argv[]){
 	string rq = "GET http://www.google.com/ HTTP/1.1\r\n\r\n";

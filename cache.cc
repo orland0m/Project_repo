@@ -10,7 +10,7 @@
 #include <ctime>
 #include <clocale>
 using namespace std;
-#define MEM_500 (string("HTTP/1.1 500 Internal Proxy Error")).c_str()
+string default_response = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 
 string getData(string);
 
@@ -39,7 +39,6 @@ int isExpired(string date){
 }
 
 HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
-	expires = NULL;
 	string data = getData(request->GetHost()+request->GetPath()); 
 	int dataLength = data.length();
 	if(dataLength>1){
@@ -61,7 +60,7 @@ HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
 }
 
 
-Http-Response * SaveToCache(Http-Response * response, string url){
+HttpResponse * SaveToCache(HttpResponse * response, string url){
 	int code = stoi(response->GetStatusCode());
 	int twoH = 1; // it is used to use 200's save feature. That is when we have a new expiration date
 	switch(code){
@@ -123,9 +122,9 @@ HttpResponse * GetErrorPage(int errorNumber){
 	string data = getData(path);
 	HttpResponse * response = new HttpResponse;;
 	if(data.length>1){
-		response -> FormatResponse(data.c_str());
+		response -> ParseResponse(data.c_str(), data.length());
 	}else{
-		response -> FormatResponse(MEM_500);
+		response -> ParseResponse(default_response.c_str(),default_response.length());
 	}
 	return response;
 }

@@ -48,7 +48,7 @@ HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
 			response -> ParseResponse(data.c_str(),dataLength);
 			if(!returnExpired&&isExpired(expires = response -> FindHeader("Expires"))){
 				if((request->FindHeader("If-Modified-Since"))==""){
-					request->AddHeader("If-Modified-Since: "+expires);
+					request->AddHeader("If-Modified-Since", expires);
 				}
 				delete response;
 			}else{
@@ -62,7 +62,7 @@ HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
 
 
 HttpResponse * SaveToCache(HttpResponse * response, string url){
-	int code = stoi(string(response->GetStatusCode()));
+	int code = std::stoi(string(response->GetStatusCode()));
 	int twoH = 1; // it is used to use 200's save feature. That is when we have a new expiration date
 	switch(code){
 		case 304: {
@@ -83,7 +83,7 @@ HttpResponse * SaveToCache(HttpResponse * response, string url){
 		case 200: {
 			if(twoH&&!isExpired(response -> FindHeader("Expires"))){
 				size_t length = response -> GetTotalLength();
-				char * data = (char *) malloc(length);
+				char * data = new char[length];
 				if(data){
 					data[0] = '\0';
 					response -> FormatResponse(data);

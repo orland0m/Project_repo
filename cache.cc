@@ -126,7 +126,7 @@ HttpResponse * GetErrorPage(int errorNumber){
 	string data = getData(path);
 	HttpResponse * response;
 	response = new HttpResponse;
-	if(data.length>1){
+	if(data.length()>1){
 		response -> ParseResponse(data.c_str(), data.length());
 	}else{
 		response -> ParseResponse(default_response.c_str(),default_response.length());

@@ -63,7 +63,7 @@ HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
 
 
 HttpResponse * SaveToCache(HttpResponse * response, string url){
-	int code = atoi(string(response->GetStatusCode()));
+	int code = atoi(response->GetStatusCode());
 	int twoH = 1; // it is used to use 200's save feature. That is when we have a new expiration date
 	switch(code){
 		case 304: {
@@ -88,8 +88,7 @@ HttpResponse * SaveToCache(HttpResponse * response, string url){
 				if(data){
 					data[0] = '\0';
 					response -> FormatResponse(data);
-					ofstream file;
-					file.open("cache/"+url, std::ios::trunc);
+					ofstream file("cache/"+url);
 					file << data;
 					delete(data);
 					file.close();

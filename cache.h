@@ -30,6 +30,8 @@ string GetFromCache(HttpRequest *, int);
  * IN: Integer. That integer is to be a valid http error code that is already stored
  * 		in cache.
  * OUT: The html error page corresponding to that error code.
+ * NOTES: Not fully implemented. Right now it returns a google 404, or 500 if there was a
+ *			problem reading.
  * PRECONDITIONS: when requesting an error page, e.g. 404, there has to be an http response
  * 				stored in cache/stderr/<ERROR_NUMBER>.html, otherwise it will return 
  *				a 500 response error loaded from memory

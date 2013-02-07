@@ -10,6 +10,6 @@
  * 		A previously set up socket
  * OUT: An http response. That response is ready to be sent to the client.
  */
-HttpResponse * GetRequestedPage(HttpRequest *, int);
+HttpResponse * GetFromRemoteServer(HttpRequest *, int);
 
 #endif

@@ -22,7 +22,7 @@ int main (int argc, char *argv[]){
 	}
 	cout << "Making remote request..." << endl;
 	char * data;
-	r = GetRequestedPage(request,0); //requesting to remote server, the second argument should be a socket file descriptor
+	r = GetFromRemoteServer(request,0); //requesting to remote server, the second argument should be a socket file descriptor
 	data = new char[r->GetTotalLength()];
 	r -> FormatResponse(data);
 	cout << "Response arrived: " << data <<endl;

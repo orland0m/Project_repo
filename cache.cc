@@ -58,7 +58,7 @@ string GetFromCache(HttpRequest * request, int returnExpired){
   		}catch (int e){
   		}
 	}
-	return NULL;
+	return "";
 }
 
 
@@ -72,7 +72,7 @@ string SaveToCache(string buffer, string url){
 			twoH = 0;
 			string data = getData(url); 
 			int dataLength = data.length();
-			if(dataLength>=1){
+			if(dataLength>0){
 				string expDate = response -> FindHeader("Expires");
 				int expired = isExpired(expDate);
 				response = new HttpResponse;

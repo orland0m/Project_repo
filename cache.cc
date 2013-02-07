@@ -39,7 +39,7 @@ int isExpired(string date){
 }
 
 HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
-	char const * expires = NULL;
+	string expires = "";
 	string data = getData(request->GetHost()+request->GetPath()); 
 	int dataLength = data.length();
 	if(dataLength>1){
@@ -65,7 +65,7 @@ HttpResponse * SaveToCache(HttpResponse * response, string url){
 	int code = stoi(string(response->GetStatusCode()));
 	int twoH = 1; // it is used to use 200's save feature. That is when we have a new expiration date
 	switch(code){
-		case 304:
+		case 304: {
 			twoH = 0;
 			string data = getData(url); 
 			int dataLength = data.length();
@@ -79,7 +79,8 @@ HttpResponse * SaveToCache(HttpResponse * response, string url){
 					twoH = 1;
 				}
 			}
-		case 200:
+		}
+		case 200: {
 			if(twoH&&!isExpired(response -> FindHeader("Expires"))){
 				size_t length = response -> GetTotalLength();
 				char * data = (char *) malloc(length);
@@ -93,6 +94,7 @@ HttpResponse * SaveToCache(HttpResponse * response, string url){
 					file.close();
 				}
 			}
+		}
 		default:
 			return response;
 	}

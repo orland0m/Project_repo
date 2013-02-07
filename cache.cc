@@ -5,6 +5,7 @@
 #include "http-response.h"
 #include "http-request.h"
 #include <iostream>
+#include <stdlib.h>
 #include <string>
 #include <fstream>
 #include <ctime>
@@ -90,7 +91,7 @@ HttpResponse * SaveToCache(HttpResponse * response, string url){
 					ofstream file;
 					file.open("cache/"+url, std::ios::trunc);
 					file << data;
-					free(data);
+					delete(data);
 					file.close();
 				}
 			}
@@ -123,7 +124,8 @@ HttpResponse * GetErrorPage(int errorNumber){
 			path = "cache/stderr/404.html";
 	}
 	string data = getData(path);
-	HttpResponse * response = new HttpResponse;;
+	HttpResponse * response;
+	response = new HttpResponse;
 	if(data.length>1){
 		response -> ParseResponse(data.c_str(), data.length());
 	}else{

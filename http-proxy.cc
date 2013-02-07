@@ -1,16 +1,17 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
-#include <iostream>
+//#include <iostream>
 #include "web-request.h"
 #include "cache.h"
-#include "http-request.h"
-using namespace std;
+//#include "http-request.h"
+//using namespace std;
 
 int main (int argc, char *argv[]){
 	string rq = "GET http://www.google.com/ HTTP/1.1\r\n\r\n";
 	HttpRequest * request = new HttpRequest;
 	request -> ParseRequest(rq.c_str(), rq.length());
-	HttpResponse * r =  GetFromCache(request, 0); // get non expired file from cache
+	HttpResponse * r;
+	r = GetFromCache(request, 0); // get non expired file from cache
 	if(r){
 		cout << "Bingo! your file is in: cache/" << request->GetHost() << request->GetPath() << endl;
 		return 0;

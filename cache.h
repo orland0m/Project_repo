@@ -12,7 +12,7 @@ using namespace std;
 
 /**
  * GetFromCache's contract:
- * IN: An HTTP request. An out string. an integer [0,1] a flag to ignore expires header
+ * IN: An HTTP request. An integer [0,1] a flag to ignore expires header
  * OUT: The HTTP Response that was stored in cache. NULL if it was expired or
  *		It didn't exist.
  * NOTE: If the file has a badly formated 'Expires' date it's going to be
@@ -20,7 +20,7 @@ using namespace std;
  * SIDE EFFECTS: If the file was expired, and the request doesn't have a If-Modified-Since
  * 				header, this method will add the expiration date as an If-Modified-Since header
  */
-HttpResponse * GetFromCache(HttpRequest *, int);
+string GetFromCache(HttpRequest *, int);
 
 
 /**
@@ -30,16 +30,16 @@ HttpResponse * GetFromCache(HttpRequest *, int);
  * OUT: The html error page corresponding to that error code.
  */
 
-HttpResponse * GetErrorPage(int);
+string GetErrorPage(int);
 
 /**
  * SaveToCache's contract:
  * IN: an http response, the name of the file (server+path)
- * OUT: The recently stored request, or if it was a 304, the file that was already in cache
+ * OUT: The recently stored request. Or if it was a 304, the file that was already in cache
  * NOTE: Ideally you pass all responses to this function and it will return the response data
  *		ready to be sent to the client
  * 		If the file has non expired date it will be stored at cache/filename
  */
-HttpResponse * SaveToCache(HttpResponse *, string);
+string SaveToCache(string, string);
 
 #endif

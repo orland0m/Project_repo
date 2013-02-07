@@ -9,17 +9,16 @@
 
 using namespace std;
 
-HttpResponse * GetFromRemoteServer(HttpRequest * request, int socketFd){ // GetErrorPage
-	HttpResponse * response = GetErrorPage(404); // problem processing the request
+string GetFromRemoteServer(HttpRequest * request, int socketFd){ // GetErrorPage
+	string response = GetErrorPage(404); // problem processing the request
 	char * buffer = new char[request->GetTotalLength()];
 	buffer[0] = '\0';
 	request->FormatRequest(buffer);
 	int error = 0; // set to 1 if there was a problem
 	
-	//### Send buffer, put response back in buffer
+	//### Send buffer, put response back in buffer, and create response string
 	/*
-	response = new HttpResponse;
-	response -> ParseResponse(buffer,dataLength);
+	response = string(buffer);
 	*/
 	
 	if(!error){

@@ -39,7 +39,7 @@ int isExpired(string date){
 	return now>docs;
 }
 
-HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
+string GetFromCache(HttpRequest * request, int returnExpired){
 	string expires = "";
 	string data = getData("cache/"+request->GetHost()+request->GetPath()); 
 	int dataLength = data.length();
@@ -47,13 +47,13 @@ HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
 		try{
 			HttpResponse * response = new HttpResponse;
 			response -> ParseResponse(data.c_str(),dataLength);
-			if(!returnExpired&&isExpired(expires = response -> FindHeader("Expires"))){
-				if((request->FindHeader("If-Modified-Since"))==""){
+			if(!returnExpired && isExpired(expires = response -> FindHeader("Expires"))){
+				if(string("").compare(request->FindHeader("If-Modified-Since")) == 0){
 					request->AddHeader("If-Modified-Since", expires);
 				}
 				delete response;
 			}else{
-    			return response;
+    			return data;
     		}
   		}catch (int e){
   		}
@@ -62,15 +62,17 @@ HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
 }
 
 
-HttpResponse * SaveToCache(HttpResponse * response, string url){
+string * SaveToCache(string buffer, string url){
+	HttpResponse * response = new HttpResponse;
+	response -> ParseResponse(buffer.c_str(), buffer.length());
 	int code = atoi(response->GetStatusCode().c_str());
-	int twoH = 1; // it is used to use 200's save feature. That is when we have a new expiration date
+	int twoH = 1; // it is used to use 200's save feature. Its purpose is to update the Expires date
 	switch(code){
 		case 304: {
 			twoH = 0;
 			string data = getData(url); 
 			int dataLength = data.length();
-			if(dataLength>1){
+			if(dataLength>=1){
 				string expDate = response -> FindHeader("Expires");
 				int expired = isExpired(expDate);
 				response = new HttpResponse;
@@ -82,22 +84,25 @@ HttpResponse * SaveToCache(HttpResponse * response, string url){
 			}
 		}
 		case 200: {
-			if(twoH&&!isExpired(response -> FindHeader("Expires"))){
+			if(twoH && !isExpired(response -> FindHeader("Expires"))){
 				size_t length = response -> GetTotalLength();
 				char * data = new char[length];
 				if(data){
 					data[0] = '\0';
+					int dataStart = buffer.length() - length;
+					buffer = buffer.substr(dataStart,buffer.length());
 					response -> FormatResponse(data);
+					buffer = string(data) + buffer;
 					ofstream file;
 					file.open(("cache/"+url).c_str(),ios::trunc);
-					file << string(data);
+					file << buffer;
 					delete(data);
 					file.close();
 				}
 			}
 		}
 		default:
-			return response;
+			return buffer;
 	}
 }
 
@@ -116,20 +121,15 @@ string getData(string filename){
 }
 
 
-HttpResponse * GetErrorPage(int errorNumber){
+string GetErrorPage(int errorNumber){
 	string path = "cache/stderr/404.html";
 	switch(errorNumber){
-		case 404:
 		default:
 			path = "cache/stderr/404.html";
 	}
 	string data = getData(path);
-	HttpResponse * response;
-	response = new HttpResponse;
-	if(data.length()>1){
-		response -> ParseResponse(data.c_str(), data.length());
-	}else{
-		response -> ParseResponse(default_response.c_str(),default_response.length());
+	if(data.length()<1){
+		data = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 	}
-	return response;
+	return data;
 }

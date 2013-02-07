@@ -41,7 +41,7 @@ int isExpired(string date){
 
 HttpResponse * GetFromCache(HttpRequest * request, int returnExpired){
 	string expires = "";
-	string data = getData(request->GetHost()+request->GetPath()); 
+	string data = getData("cache/"+request->GetHost()+request->GetPath()); 
 	int dataLength = data.length();
 	if(dataLength>1){
 		try{

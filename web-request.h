@@ -1,5 +1,5 @@
-#ifndef _CACHE_
-#define _CACHE_
+#ifndef _WEB_REQUEST_
+#define _WEB_REQUEST_
 
 #include "http-response.h"
 #include "http-request.h"

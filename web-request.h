@@ -3,6 +3,9 @@
 
 #include "http-response.h"
 #include "http-request.h"
+#inclide <iostream>
+
+using namespace std;
 
 /**
  * GetRequestedPage's contract:

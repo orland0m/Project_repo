@@ -14,7 +14,7 @@ int main (int argc, char *argv[]){
 	request -> ParseRequest(rq.c_str(), rq.length());
 	string response;
 	response = GetFromCache(request, 0); // get non expired file from cache
-	if(response){
+	if(response!=NULL){
 		cout << "Bingo! your file is in: cache/" << request->GetHost() << request->GetPath() << endl;
 		return 0;
 	}else{

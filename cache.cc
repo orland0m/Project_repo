@@ -62,7 +62,7 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 }
 
 
-string * SaveToCache(string buffer, string url){
+string SaveToCache(string buffer, string url){
 	HttpResponse * response = new HttpResponse;
 	response -> ParseResponse(buffer.c_str(), buffer.length());
 	int code = atoi(response->GetStatusCode().c_str());
@@ -101,9 +101,8 @@ string * SaveToCache(string buffer, string url){
 				}
 			}
 		}
-		default:
-			return buffer;
 	}
+	return buffer;
 }
 
 string getData(string filename){

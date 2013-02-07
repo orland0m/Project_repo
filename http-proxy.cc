@@ -25,6 +25,6 @@ int main (int argc, char *argv[]){
 	r = GetFromRemoteServer(request,0); //requesting to remote server, the second argument should be a socket file descriptor
 	data = new char[r->GetTotalLength()];
 	r -> FormatResponse(data);
-	cout << "Response arrived: " << data <<endl;
+	cout << "Response arrived: " << string(data) <<endl;
 	return 0;
 }

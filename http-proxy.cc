@@ -1,13 +1,30 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
+//C++ libs
 #include <iostream>
+#include <string>
+
+//project wireframe
+#include "http-request.h"
+#include "http-headers.h"
+#include "http-response.h"
+
+//custom defined files
 #include "web-request.h" /* GetFromRemoteServer */
 #include "cache.h" /* GetFromCache */
-#include "http-request.h" /* HttpRequest */
+#include "connection-handler.h" //handles http connections
 
 using namespace std;
 
 int main (int argc, char *argv[]){
+	cout << LISTENING_PORT << endl;
+	//start server listening on specified port
+	int serverConnection = serverStartListening(LISTENING_PORT);
+	if (serverConnection < 0) {
+		cout << "Cannot start listening on port " << LISTENING_PORT << endl;
+		return 1;
+	}
+	
 	string rq = "GET http://www.google.com/index.html HTTP/1.0\r\n\r\n"; // request
 	HttpRequest * request = new HttpRequest;
 	request -> ParseRequest(rq.c_str(), rq.length()); // parse request

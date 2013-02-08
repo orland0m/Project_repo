@@ -31,5 +31,6 @@ def build (env):
             "http-headers.cc",
             "http-request.cc",
             "http-response.cc",
+			"connection-handler.cc",
             ]
         )

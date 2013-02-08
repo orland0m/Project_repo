@@ -1,5 +1,5 @@
-#ifndef CONNECTION-HANDLER
-#define CONNECTION-HANDLER
+#ifndef CONNECTION_HANDLER
+#define CONNECTION_HANDLER
 
 //define some constants
 #define LISTENING_BACKLOG 100
@@ -10,6 +10,12 @@
 #include <string>
 #include <iostream>
 
+//C libraries
+#include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 //C networking libraries
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -19,12 +25,12 @@
 
 //start the server listening component on defined port
 //ie: int socket = serverStartListening(LISTENING_PORT)
-int serverStartListening(const char* port)
+int serverStartListening(const char* port);
 
 //creates client connection with the specified host and port
-int serverNegotiateClientConnection(const char* host, const char* port)
+int serverNegotiateClientConnection(const char* host, const char* port);
 
 //request data and retrieve from remote host
-int serverRetrieveRemoteData(int remote, std::string& data)
+int serverRetrieveRemoteData(int remote, std::string& data);
 
 #endif

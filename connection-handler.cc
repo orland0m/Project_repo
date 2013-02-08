@@ -7,9 +7,9 @@ int serverStartListen(const char* port) {
 	struct addrinfo hints, *res;
 
 	//initialize hints struct
-	memset(hints, 0, sizeof info);
+	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
-	hints.ai_sockettype = SOCK_STREAM;
+	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 	
 	//getaddrinfo converts human readable text strings for hostnames
@@ -22,14 +22,14 @@ int serverStartListen(const char* port) {
 	//res is the response pointer for addrinfo created
 	int addrStatus = getaddrinfo(NULL, port, &hints, &res);
 	
-	if (addr_status != 0) {
+	if (addrStatus != 0) {
 		cerr << "Server cannot get info" << endl;
 	}
 	
 	//loop through addrinfos in the response pointer
 	struct addrinfo* current;
 	int openSocket;
-	for (current = res; p != NULL; p = p->ai_next) {
+	for (current = res; current != NULL; current = current -> ai_next) {
 		//create socket for addresses
 		openSocket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 		if (openSocket < 0) {
@@ -47,7 +47,7 @@ int serverStartListen(const char* port) {
 		
 		//bind socket to port
 		int bindStatus = bind(openSocket, res->ai_addr, res->ai_addrlen);
-		if (bind_status !=) {
+		if (bindStatus != 0) {
 			//close socket
 			close(optionStatus);
 			cerr << "Server cannot bind socket" << endl;
@@ -59,7 +59,7 @@ int serverStartListen(const char* port) {
 	}
 	
 	//what if no binds happened
-	if (p == NULL) {
+	if (current == NULL) {
 		cerr << "Server failed all port binding attempts" << endl;
 	}
 

@@ -23,7 +23,7 @@ int serverStartListen(const char* port) {
 	int addrStatus = getaddrinfo(NULL, port, &hints, &res);
 	
 	if (addrStatus != 0) {
-		cerr << "Server cannot get info" << endl;
+		cerr << "Server cannot get address info" << endl;
 	}
 	
 	//loop through addrinfos in the response pointer
@@ -76,7 +76,52 @@ int serverStartListen(const char* port) {
 }
 
 int serverNegotiateClientConnection(const char* host, const char* port) {
-	return 0;
+	//create address structs
+	struct addrinfo hints, *res;
+	
+	//initializing address struct
+	memset(&hints, 0, sizeof hints);
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	
+	//parse address 
+	int addressStatus = getaddrinfo(host, port, &hints, &res);
+	if (addressStatus != 0) {
+		cout << "Server cannot get client address info" << endl;
+		return -1;
+	}
+	
+	//loop through response pointer
+	int openSocket;
+	struct addrinfo* current;
+	for (current = res; current != NULL; current = current -> ai_next) {
+		//create socket for client
+		openSocket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+		if (openSocket < 0) {
+			cerr << "Client cannot open socket" << endl;
+			continue;
+		}
+		
+		//establish connection
+		int connectStatus = connect(openSocket, current->ai_addr, current->ai_addrlen);
+		if (connectStatus < 0) {
+			close(openSocket);
+			cerr << "Client cannot connect" << endl;
+		}
+		
+		break;
+	}
+	
+	//if cannot bind
+	if (current == NULL) {
+		cerr << "Client cannot bind socket" << endl;
+		return -2;
+	}
+	
+	//free unneeded memory
+	free(res);
+	
+	return openSocket;
 }
 
 int serverRetriveRemoteData(int remote, string& data) {

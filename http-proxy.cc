@@ -37,8 +37,8 @@ int main (int argc, char *argv[]){
 	}
 	cout << "Making remote request..." << endl;
 	
-	string destPort = string(request->GetPort()); // port
-	string destHost = request->GetHost(); // host URL
+	string destPort = request->GetPort()+""; // port
+	string destHost = string(request->GetHost()); // host URL
 	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
 	
 	response = GetFromRemoteServer(request, socket); //requesting to remote server

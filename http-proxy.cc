@@ -39,7 +39,7 @@ int main (int argc, char *argv[]){
 	
 	string destPort = 80+""; // port
 	string destHost = string(request->GetHost()); // host URL
-	cout << destPort << ": Por   t" << endl;
+	cout <<"_"<< destPort << ": Port" << endl;
 	cout << destHost << ": Host" << endl;
 	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
 	

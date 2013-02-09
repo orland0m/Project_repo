@@ -17,13 +17,13 @@
 using namespace std;
 
 int main (int argc, char *argv[]){
-	cout << LISTENING_PORT << endl;
+	/* cout << LISTENING_PORT << endl;
 	//start server listening on specified port
 	int serverConnection = serverStartListening(LISTENING_PORT);
 	if (serverConnection < 0) {
 		cout << "Cannot start listening on port " << LISTENING_PORT << endl;
 		return 1;
-	}
+	}*/
 	
 	string rq = "GET http://www.google.com/index.html HTTP/1.0\r\n\r\n"; // request
 	HttpRequest * request = new HttpRequest;
@@ -33,10 +33,15 @@ int main (int argc, char *argv[]){
 		cout << "Bingo! your file is in: cache/" << request->GetHost() << request->GetPath() << endl;
 		return 0;
 	}else{
-		cout << "Oops... This is embarrassing. We don't have that file yet" << endl;
+		cout << "Oops... This is embarrassing. We don't have that file yet. It's not the end of the world though:" << endl;
 	}
 	cout << "Making remote request..." << endl;
-	response = GetFromRemoteServer(request, 0); //requesting to remote server, the second argument should be a socket file descriptor
+	
+	string destPort = string(request->GetPort()); // port
+	string destHost = request->GetHost(); // host URL
+	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
+	
+	response = GetFromRemoteServer(request, socket); //requesting to remote server
 	cout << "Response received: "<< endl << response <<endl;
 	// response should contain a file ready to be sent to the client, even if there was an error
 	return 0;

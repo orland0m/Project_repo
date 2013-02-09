@@ -25,7 +25,7 @@ int main (int argc, char *argv[]){
 		return 1;
 	}*/
 	
-	string rq = "GET http://www.google.com/index.html HTTP/1.0\r\n\r\n"; // request
+	string rq = "GET http://www.google.com:80/index.html HTTP/1.0\r\n\r\n"; // request
 	HttpRequest * request = new HttpRequest;
 	request -> ParseRequest(rq.c_str(), rq.length()); // parse request
 	string response = GetFromCache(request, 0); // get non expired file from cache

@@ -37,7 +37,7 @@ int main (int argc, char *argv[]){
 	}
 	cout << "Making remote request..." << endl;
 	
-	string destPort = 80+""; // port
+	string destPort = "80"; // port
 	string destHost = string(request->GetHost()); // host URL
 	cout <<"_"<< destPort << ": Port" << endl;
 	cout << destHost << ": Host" << endl;

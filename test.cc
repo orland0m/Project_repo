@@ -1,6 +1,6 @@
-//#include <iostream>
-//#include <fstream>
-//#include <string>
+#include <iostream>
+#include <fstream>
+#include <string>
 
 //project wireframe
 #include "http-request.h"
@@ -38,7 +38,7 @@ void ProcessRequest(string rq){
 
 int ProcessFile (string name){
 	string line;
-	ifstream myfile (name);
+	std::ifstream myfile (name.c_str());
 	if (myfile.is_open()){
     	while ( myfile.good() ){
     		getline(myfile,line);

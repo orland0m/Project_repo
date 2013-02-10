@@ -25,6 +25,7 @@ def build (env):
         features = ["cxx", "cxxprogram"],
         use = 'BOOST BOOST_THREAD',
         source = [
+        	"test.cc",
             "web-request.cc",
             "cache.cc",
             "http-proxy.cc", # main() function is here

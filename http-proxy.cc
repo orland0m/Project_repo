@@ -25,7 +25,7 @@ int main (int argc, char *argv[]){
 		return 1;
 	}*/
 	
-	string rq = "GET http://www.google.com:80/index.html HTTP/1.0\r\n\r\n"; // request
+	string rq = "GET http://www.onenaught.com/posts/17/web-site-performance-expires-header HTTP/1.0\r\n\r\n"; // request
 	HttpRequest * request = new HttpRequest;
 	request -> ParseRequest(rq.c_str(), rq.length()); // parse request
 	string response = GetFromCache(request, 0); // get non expired file from cache
@@ -39,7 +39,7 @@ int main (int argc, char *argv[]){
 	
 	string destPort = "80"; // port
 	string destHost = string(request->GetHost()); // host URL
-	cout <<"_"<< destPort << ": Port" << endl;
+	cout << destPort << ": Port" << endl;
 	cout << destHost << ": Host" << endl;
 	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
 	

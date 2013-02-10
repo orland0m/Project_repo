@@ -40,6 +40,14 @@ void ProcessRequest(string rq){
 
 int main (int argc, char *argv[]){
 	string line;
+	
+	
+	
+	
+	
+	
+	
+	
 	std::ifstream myfile ("response.txt");
 	if (myfile.is_open()){
     	while ( myfile.good() ){

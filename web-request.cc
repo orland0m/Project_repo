@@ -17,7 +17,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 	request->FormatRequest(msg); // fill buffer
 	string tmp = "";
 	
-	cout << "Sending: {"<< endl << msg << endl << "}" << endl; // debug output
+	//cout << "Sending: {"<< endl << msg << endl << "}" << endl; // debug output
 	int error = 0; // set to 1 if there was a problem
 	
 	int bytes_sent = send(sockfd, msg, msg_len, 0);

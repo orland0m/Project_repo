@@ -44,7 +44,7 @@ int main (int argc, char *argv[]){
 	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
 	
 	response = GetFromRemoteServer(request, socket); //requesting to remote server
-	cout << "Response received: "<< endl << response <<endl;
+	cout << "Response received: "<< endl << response.length() <<endl;
 	// response should contain a file ready to be sent to the client, even if there was an error
 	return 0;
 }

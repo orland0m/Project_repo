@@ -1,8 +1,8 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 //C++ libs
-//#include <iostream>
-//#include <string>
+#include <iostream>
+#include <string>
 
 //project wireframe
 #include "http-request.h"
@@ -14,7 +14,7 @@
 #include "cache.h" /* GetFromCache */
 #include "connection-handler.h" //handles http connections
 
-//using namespace std;
+using namespace std;
 
 void ProcessRequest(string rq){
 	cout << rq << endl;
@@ -40,10 +40,10 @@ void ProcessRequest(string rq){
 
 int main (int argc, char *argv[]){
 	string line;
-	std::ifstream myfile ("response.txt");
+	ifstream myfile ("response.txt");
 	if (myfile.is_open()){
     	while ( myfile.good() ){
-    		std::getline(myfile,line);
+    		getline(myfile,line);
     		ProcessRequest(line);
     	}
     	myfile.close();

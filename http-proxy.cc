@@ -1,8 +1,8 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 //C++ libs
-#include <iostream>
-#include <string>
+//#include <iostream>
+//#include <string>
 
 //project wireframe
 #include "http-request.h"
@@ -40,14 +40,6 @@ void ProcessRequest(string rq){
 
 int main (int argc, char *argv[]){
 	string line;
-	
-	
-	
-	
-	
-	
-	
-	
 	std::ifstream myfile ("response.txt");
 	if (myfile.is_open()){
     	while ( myfile.good() ){

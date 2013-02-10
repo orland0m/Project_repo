@@ -14,7 +14,7 @@
 #include "cache.h" /* GetFromCache */
 #include "connection-handler.h" //handles http connections
 
-using namespace std;
+//using namespace std;
 
 void ProcessRequest(string rq){
 	cout << rq << endl;

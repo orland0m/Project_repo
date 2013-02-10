@@ -40,11 +40,9 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 		cerr << "Error sending" << endl;
 		error = 1;
 	}
-		
-	if(!error&&tmp.length()>0) response = tmp;
 	
-	if(!error){
-		response = SaveToCache(response, request->GetHost()+request->GetPath()); 
+	if(!error&&tmp.length()>0){
+		response = SaveToCache(tmp, request->GetHost()+request->GetPath()); 
 	}else{
 		sockfd = -1;
 	}

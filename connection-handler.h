@@ -1,5 +1,5 @@
-#ifndef CONNECTION_HANDLER
-#define CONNECTION_HANDLER
+#ifndef _CONNECTION_HANDLER_
+#define _CONNECTION_HANDLER_
 
 //define some constants
 #define LISTENING_BACKLOG 100

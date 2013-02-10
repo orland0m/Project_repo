@@ -39,18 +39,13 @@ void ProcessRequest(string rq){
 }
 
 int main (int argc, char *argv[]){
-	string line;
-    ifstream infile;
-    infile.open ("request.txt");
-    int a=0;
-    string previousLine="";
-    while(a<1){
-        getline(infile,line);
-        if (line != previousLine){
-            previousLine=line;
-            ProcessRequest(line);
-        }
-    }
-    infile.close();
+	string sLine = "";
+	ifstream infile;
+	infile.open("request.txt");
+	while (!infile.eof()){
+		getline(infile, sLine);
+		ProcessRequest(sLine);
+	}
+	infile.close();
 	return 0;
 }

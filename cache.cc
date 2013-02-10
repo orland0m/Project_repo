@@ -96,7 +96,7 @@ string SaveToCache(string buffer, string url){
 					ofstream file;
 					file.open(("cache/"+url).c_str(),ios::trunc);
 					file << buffer;
-					cout << "saved: " << endl << buffer;
+					cout << "saved:  "<< url << endl;
 					delete(data);
 					file.close();
 				}

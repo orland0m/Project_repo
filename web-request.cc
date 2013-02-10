@@ -37,7 +37,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 			error = 1;
 		}
 	}else{
-		cerr << "Error sending" << endl;
+		cerr << "Error sending request to server" << endl;
 		error = 1;
 	}
 	

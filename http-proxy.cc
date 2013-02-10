@@ -39,13 +39,14 @@ void ProcessRequest(string rq){
 }
 
 int main (int argc, char *argv[]){
-	string sLine = "";
-	ifstream infile;
-	infile.open("request.txt");
-	while (!infile.eof()){
-		getline(infile, sLine);
-		ProcessRequest(sLine);
-	}
-	infile.close();
+	string line;
+	ifstream myfile ("response.txt");
+	if (myfile.is_open()){
+    	while ( myfile.good() ){
+    		getline (myfile,line);
+    		ProcessRequest(line);
+    	}
+    	myfile.close();
+	}else cout << "Unable to open file response.txt";
 	return 0;
 }

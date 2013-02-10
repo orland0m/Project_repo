@@ -5,6 +5,7 @@
 #include "http-response.h"
 #include "http-request.h"
 #include <iostream>
+#include <boost/filesystem.hpp>
 #include <stdlib.h>
 #include <string>
 #include <fstream>
@@ -85,6 +86,9 @@ string SaveToCache(string buffer, string url){
 		}
 		case 200: {
 			if(twoH && !isExpired(response -> FindHeader("Expires"))){
+				boost::filesystem::path path("cache/"+url);
+				boost::filesystem::path dir = p.parent_path();
+				boost::filesystem::create_directories(dir);
 				size_t length = response -> GetTotalLength();
 				char * data = new char[length];
 				if(data){

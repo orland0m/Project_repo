@@ -11,10 +11,12 @@
 #include <fstream>
 #include <ctime>
 #include <clocale>
+#include <sys/stat.h>
 using namespace std;
 string default_response = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 
 string getData(string);
+void MakeTreeDir(string, string);
 
 /**
 	Used to get the time in seconds of an HTML-date
@@ -40,6 +42,10 @@ int isExpired(string date){
 	return now>docs;
 }
 
+
+/**
+	Top level function to get response from cache
+*/
 string GetFromCache(HttpRequest * request, int returnExpired){
 	string expires = "";
 	string data = getData("cache/"+request->GetHost()+request->GetPath()); 
@@ -63,6 +69,10 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 }
 
 
+
+/**
+	Top level function to save response to cache
+*/
 string SaveToCache(string buffer, string url){
 	HttpResponse * response = new HttpResponse;
 	response -> ParseResponse(buffer.c_str(), buffer.length());
@@ -86,9 +96,7 @@ string SaveToCache(string buffer, string url){
 		}
 		case 200: {
 			if(twoH && !isExpired(response -> FindHeader("Expires"))){
-				boost::filesystem::path path("cache/"+url);
-				boost::filesystem::path dir = p.parent_path();
-				boost::filesystem::create_directories(dir);
+				MakeTreeDir(url,"");
 				size_t length = response -> GetTotalLength();
 				char * data = new char[length];
 				if(data){
@@ -110,6 +118,68 @@ string SaveToCache(string buffer, string url){
 	return buffer;
 }
 
+
+/**
+	This function returns an http error message
+*/
+string GetErrorPage(int errorNumber){
+	string path = "cache/stderr/404.html";
+	switch(errorNumber){
+		default:
+			path = "cache/stderr/404.html";
+	}
+	string data = getData(path);
+	if(data.length()<1){
+		data = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
+	}
+	return data;
+}
+
+
+/**
+	This function gets the base directory of a string
+	IN: cache/a/
+	OUT: cache/
+	OUT ARG: a/
+*/
+string GetBaseDir(string& s){
+	char const * tmp = s.c_str();
+	string r = "";
+	for(int i=0; i<s.length(); i++){
+		if(tmp[i]=='/'){ 
+			s = string(s,i+1,s.length());
+			return r+"/";
+		}
+		r += tmp[i];
+	}
+	return "";
+}
+
+
+/**
+	Recursive function to create a directory tree
+	Can be any path, relative or absolute
+	IN: "cache/a/b/c", ""
+		"a/b/c", "cache/"
+	SIDE EFECT: Will create directory cache/a/b/
+	NOTE: A final slash is needed to create cache/a/b/c/
+	IT will go down to the last leave, even if there are errors.
+	This because it can be called when the directories are already there.
+*/
+void MakeTreeDir(string missing, string done){
+	string tmp = GetBaseDir(missing);
+	if(tmp.compare("")==0) return;
+	done += tmp;
+	mkdir(done.c_str(), 0700);
+	cout << "Making: " << done << endl;
+	MakeTreeDir(missing,done);
+}
+
+/**
+	This function retrieves data from a file on this, you just provide a file name
+	If the file isn't accesible or doesn't exist it returns an empty string
+*/
+
 string getData(string filename){
   ifstream in(filename.c_str(), ios::in | ios::binary);
   if (in){
@@ -122,18 +192,4 @@ string getData(string filename){
     return(contents);
   }
   return "";
-}
-
-
-string GetErrorPage(int errorNumber){
-	string path = "cache/stderr/404.html";
-	switch(errorNumber){
-		default:
-			path = "cache/stderr/404.html";
-	}
-	string data = getData(path);
-	if(data.length()<1){
-		data = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
-	}
-	return data;
 }

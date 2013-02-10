@@ -36,13 +36,31 @@ void ProcessRequest(string rq){
 	// "response" should contain a file ready to be sent to the client, even if there was an error
 }
 
+string putCRLF(char const * str){
+	string tmp = "";
+	for(int i=0; str[i]!='\0'; i++)){
+		if(str[i]=='\\'&&str[i+1]=='r'){
+			tmp+='\r';
+			i++;
+			continue;
+		}
+		if(str[i]=='\\'&&str[i+1]=='n'){
+			tmp+='\n';
+			i++;
+			continue;
+		}
+		tmp+=str[i];
+	}
+	return tmp;
+}
+
 int ProcessFile (string name){
 	string line;
 	std::ifstream myfile (name.c_str());
 	if (myfile.is_open()){
     	while ( myfile.good() ){
     		getline(myfile,line);
-    		ProcessRequest(line);
+    		ProcessRequest(putCRLF(line.c_str()));
     	}
     	myfile.close();
 	}else cout << "Unable to open file " << name;

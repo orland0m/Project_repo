@@ -27,6 +27,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 		if(bytes_read>0){
 			tmp += string(msg);
 			while(BUFFER_SIZE==bytes_read){
+				msg = new char[BUFFER_SIZE];
 				msg[0] = '\0';
 				bytes_read = recv(sockfd, msg, BUFFER_SIZE, 0);
 				tmp += string(msg);

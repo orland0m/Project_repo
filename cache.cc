@@ -92,17 +92,20 @@ string SaveToCache(string buffer, string url){
 				buffer = cacheData;
 				string expDate = response -> FindHeader("Expires");
 				int expired = isExpired(expDate);
+				delete(response);
 				response = new HttpResponse;
-				string strTmp = string(response -> ParseResponse(buffer.c_str(),cacheDataLength));
+				response -> ParseResponse(buffer.c_str(),buffer.length())
+				string strTmp = buffer.substr(response -> GetTotalLength(), buffer.length());;
 				if(!expired){
-					cout << "Updating Expires date" << endl;
+					cout << "Updating Expires date..." << endl;
 					response -> ModifyHeader("Expires",expDate);
 					char * charTmp = new char[response->GetTotalLength()];
 					if(charTmp){
 						memset(charTmp,'\0',response->GetTotalLength());
 						response -> FormatResponse(charTmp);
-						buffer = charTmp +"<!--304 Proxy server comment-->"+ strTmp;
+						buffer = string(charTmp)+"<!--304 Proxy server comment-->" + strTmp;
 						twoH = 1;
+						delete(charTmp);
 					}
 				}
 			}else{

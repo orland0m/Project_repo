@@ -41,8 +41,6 @@ int isExpired(string date){
 	ptm = gmtime (&rawtime);
 	time_t now = mktime(ptm);
 	time_t docs = GMTToSeconds(date.c_str());
-	cout << "Now: " << now << endl;
-	cout << "Doc's: " << docs << endl;
 	return now>docs;
 }
 

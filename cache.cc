@@ -16,7 +16,7 @@ using namespace std;
 string default_response = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 
 string getData(string);
-void MakeTreeDir(string, string);
+void MakeTreeDir(string);
 
 /**
 	Used to get the time in seconds of an HTML-date
@@ -113,13 +113,14 @@ string SaveToCache(string buffer, string url){
 		}
 		case 200: {
 			if(twoH && !isExpired(response -> FindHeader("Expires"))){
+				MakeTreeDir("cache/"+url);
 				ofstream file;
 				file.open(("cache/"+url).c_str(),ios::trunc);
 				file << buffer;
 				cout << "Saved to cache:  "<< url << endl;
 				file.close();
 			}else{
-				cout "Document expired... not saved!" << endl;
+				cout << "Document expired... not saved!" << endl;
 			}
 		}
 	}
@@ -157,8 +158,9 @@ string GetBaseDir(string& s){
 
 
 /**
-	Recursive function to create a directory tree
-	Can be any path, relative or absolute
+	Create a directory tree
+	Can be any path, relative or absolute. It will only try, it doesn't throw erros
+	if it doesn't have permission or the directory is already there.
 	IN: "cache/a/b/c", ""
 		"a/b/c", "cache/"
 	SIDE EFECT: Will create directory cache/a/b/
@@ -166,12 +168,13 @@ string GetBaseDir(string& s){
 	IT will go down to the last leave, even if there are errors.
 	This because it can be called when the directories are already there.
 */
-void MakeTreeDir(string missing, string done){
-	string tmp = GetBaseDir(missing);
-	if(tmp.compare("")==0) return;
-	done += tmp;
-	mkdir(done.c_str(), 0777);
-	MakeTreeDir(missing,done);
+void MakeTreeDir(string missing){
+	string done = "";
+	string tmp = "";
+	while((tmp = GetBaseDir(missing)).compare("")!=0){
+		done+=tmp;
+		mkdir(done.c_str(), 0777);
+	}
 }
 
 /**

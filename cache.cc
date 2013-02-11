@@ -111,8 +111,7 @@ string SaveToCache(string buffer, string url){
 				char * data = new char[length];
 				if(data){
 					data[0] = '\0';
-					int dataStart = buffer.length() - length;
-					buffer = buffer.substr(dataStart,buffer.length());
+					buffer = buffer.substr(length, buffer.length());
 					response -> FormatResponse(data);
 					buffer = string(data) + buffer;
 					ofstream file;

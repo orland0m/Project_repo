@@ -84,7 +84,7 @@ string SaveToCache(string buffer, string url){
 	switch(code){
 		case 304: {
 			twoH = 0;
-			string cacheData = getData("cache"+url); 
+			string cacheData = getData("cache/"+url); 
 			int cacheDataLength = cacheData.length();
 			if(cacheDataLength>0){
 				buffer = cacheData;
@@ -102,7 +102,6 @@ string SaveToCache(string buffer, string url){
 				}
 			}else{
 				cout << "304 but didn't find data in cache" << endl;
-				cout << "file: cache" << url << endl;
 			}
 		}
 		case 200: {

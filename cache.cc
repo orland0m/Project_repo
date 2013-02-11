@@ -94,7 +94,7 @@ string SaveToCache(string buffer, string url){
 				if(!isExpired(expDate)){
 					delete(response);
 					response = new HttpResponse;
-					response -> ParseResponse(buffer.c_str(),buffer.length())
+					response -> ParseResponse(buffer.c_str(),buffer.length());
 					string strTmp = buffer.substr(response -> GetTotalLength(), buffer.length());;
 					cout << "Updating Expires date..." << endl;
 					response -> ModifyHeader("Expires",expDate);
@@ -118,6 +118,8 @@ string SaveToCache(string buffer, string url){
 				file << buffer;
 				cout << "Saved to cache:  "<< url << endl;
 				file.close();
+			}else{
+				cout "Document expired... not saved!" << endl;
 			}
 		}
 	}

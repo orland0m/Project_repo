@@ -21,6 +21,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 	
 	int bytes_sent = send(sockfd, msg, msg_len, 0);
 	if(bytes_sent>0){
+		int bytes_read;
 		int * endFlags = new int[3];
 		endFlags[0] = endFlags[1] = endFlags[2] = 0;
 		while(1){ // read header only
@@ -34,7 +35,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 					endFlags[2] = 1;
 				}else if(endFlags[0]&&msg[0]=='\n'){
 					endFlags[1] = 1;
-				}else if(mgs[0]=='\r'){
+				}else if(msg[0]=='\r'){
 					endFlags[0] = 1;
 				}else{
 					endFlags[0] = endFlags[1] = endFlags[2] = 0;
@@ -45,7 +46,6 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 			}
 		}
 		if(!error){
-			int bytes_read;
 			HttpResponse * header = new HttpResponse;
 			header -> ParseResponse(tmp.c_str(),tmp.length());
 			string cntLengthStr = header -> FindHeader("Content-Length");

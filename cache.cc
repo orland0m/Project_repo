@@ -111,7 +111,7 @@ string SaveToCache(string buffer, string url){
 				size_t length = response -> GetTotalLength();
 				char * data = new char[length];
 				if(data){
-					data[0] = '\0';
+					memset (data,'\0',length);
 					buffer = buffer.substr(length, buffer.length());
 					response -> FormatResponse(data);
 					buffer = string(data) +"<ORLANDO>"+ buffer;

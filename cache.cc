@@ -12,6 +12,7 @@
 #include <ctime>
 #include <clocale>
 #include <sys/stat.h>
+#include <errno.h>
 using namespace std;
 string default_response = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 
@@ -26,6 +27,7 @@ time_t GMTToSeconds(const char *date){
     if((char *)strptime(date,"%a, %d %b %Y %T GMT",&time_rt)){
     	return mktime(&time_rt);
     }
+    cout << "Could not convert GMT time to seconds: " << strerror(errno) << endl;
     return 0;
 }
 
@@ -36,10 +38,11 @@ int isExpired(string date){
 	time_t rawtime;
 	struct tm * ptm;
 	time(&rawtime);
-	ptm = gmtime ( &rawtime );
+	ptm = gmtime (&rawtime);
 	time_t now = mktime(ptm);
-	now = gmtime(now);
 	time_t docs = GMTToSeconds(date.c_str());
+	cout << "Now: " << now << endl;
+	cout << "Doc's: " << docs << endl;
 	return now>docs;
 }
 

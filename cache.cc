@@ -65,8 +65,9 @@ string GetFromCache(HttpRequest * request, int returnExpired){
     		}
   		}catch (...){
   		}
+	}else{
+		cout << "Data not in cache" << endl;
 	}
-	cout << "Data not in cache" << endl;
 	return "";
 }
 
@@ -179,7 +180,7 @@ void MakeTreeDir(string missing, string done){
 	string tmp = GetBaseDir(missing);
 	if(tmp.compare("")==0) return;
 	done += tmp;
-	mkdir(done.c_str(), 0700);
+	mkdir(done.c_str(), 0777);
 	MakeTreeDir(missing,done);
 }
 

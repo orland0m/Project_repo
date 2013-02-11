@@ -58,14 +58,15 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 			expires = response -> FindHeader("Expires");
 			cout << "Expires: " << expires << endl;
 			if(!returnExpired && isExpired(expires)){
-				cout << "Expires: " << expires << endl;
+				cout << "Expired!" << endl;
 				if(string("").compare(request->FindHeader("If-Modified-Since")) == 0){
-					cout << "Adding If-Modified-Since header" << endl;
+					cout << "Adding: If-Modified-Since header: "<< expires << endl;
 					request->AddHeader("If-Modified-Since", expires);
 				}
 				delete response;
 			}else{
 				cout << "Returning retrieved data from cache" << endl;
+				delete response;
     			return data;
     		}
   		}catch (...){
@@ -117,6 +118,7 @@ string SaveToCache(string buffer, string url){
 		}
 		case 200: {
 			if(twoH && !isExpired(response -> FindHeader("Expires"))){
+				cout << "Caching response..." << endl;
 				MakeTreeDir("cache/"+url);
 				ofstream file;
 				file.open(("cache/"+url).c_str(),ios::trunc);

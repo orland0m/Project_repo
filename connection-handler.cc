@@ -125,5 +125,20 @@ int serverNegotiateClientConnection(const char* host, const char* port) {
 }
 
 int serverRetriveRemoteData(int remote, string& data) {
+	while (true) {
+		//buffer used for storing incoming data
+		char buffer[BUFFER_SIZE];
+		
+		//gets data from remote end
+		int received = recv(remote, buffer, sizeof(remote), 0);
+		if (received < 0) {
+			perror("Retrieve remote data receive error");
+			return -1;
+		} else if (received == 0) { // if nothing received, end connection
+			break;
+		}
+		
+		data.append(buffer, received);
+	}
 	return 0;
 }

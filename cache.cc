@@ -114,7 +114,7 @@ string SaveToCache(string buffer, string url){
 					data[0] = '\0';
 					buffer = buffer.substr(length, buffer.length());
 					response -> FormatResponse(data);
-					buffer = string(data) + buffer;
+					buffer = string(data) +"<ORLANDO>"+ buffer;
 					ofstream file;
 					file.open(("cache/"+url).c_str(),ios::trunc);
 					file << buffer;

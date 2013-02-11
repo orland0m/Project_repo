@@ -22,7 +22,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 	int bytes_sent = send(sockfd, msg, msg_len, 0);
 	if(bytes_sent>0){
 		int * endFlags = new int[3];
-		memset(endFlags,0,3);
+		endFlags[0] = endFlags[1] = endFlags[2] = 0;
 		while(1){ // read header only
 			msg = new char[1];
 			bytes_read = recv(sockfd, msg, 1, 0);// read header by byte
@@ -37,8 +37,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 				}else if(mgs[0]=='\r'){
 					endFlags[0] = 1;
 				}else{
-					int * endFlags = new int[3];
-					memset(endFlags,0,3);
+					endFlags[0] = endFlags[1] = endFlags[2] = 0;
 				}
 			}else{
 				error = 1;

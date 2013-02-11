@@ -102,6 +102,7 @@ string SaveToCache(string buffer, string url){
 				}
 			}else{
 				cout << "304 but didn't find data in cache" << endl;
+				cout << "file: cache" << url << endl;
 			}
 		}
 		case 200: {

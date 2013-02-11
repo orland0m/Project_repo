@@ -21,22 +21,24 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 	
 	int bytes_sent = send(sockfd, msg, msg_len, 0);
 	if(bytes_sent>0){
-		int[] endFlags = {0,0,0};
+		int * endFlags = new int[3];
+		memset(endFlags,0,3);
 		while(1){ // read header only
 			msg = new char[1];
 			bytes_read = recv(sockfd, msg, 1, 0);// read header by byte
 			if(bytes_read==1){
 				tmp += msg[0];
-				if(endFlags[0]&&endFlags[1]&&endFlags[2]&&mgs[0]=='\n'){
+				if(endFlags[0]&&endFlags[1]&&endFlags[2]&&msg[0]=='\n'){
 					break;
-				}else if(endFlags[0]&&endFlags[1]&&mgs[0]=='\r'){
+				}else if(endFlags[0]&&endFlags[1]&&msg[0]=='\r'){
 					endFlags[2] = 1;
-				}else if(endFlags[0]&&mgs[0]=='\n'){
+				}else if(endFlags[0]&&msg[0]=='\n'){
 					endFlags[1] = 1;
 				}else if(mgs[0]=='\r'){
 					endFlags[0] = 1;
 				}else{
-					endFlags = {0,0,0};
+					int * endFlags = new int[3];
+					memset(endFlags,0,3);
 				}
 			}else{
 				error = 1;
@@ -44,10 +46,11 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 			}
 		}
 		if(!error){
-			HttpResponse header = new HttpResponse;
+			int bytes_read;
+			HttpResponse * header = new HttpResponse;
 			header -> ParseResponse(tmp.c_str(),tmp.length());
 			string cntLengthStr = header -> FindHeader("Content-Length");
-			int cntLength = atoi(cntLengthStr);
+			int cntLength = atoi(cntLengthStr.c_str());
 			if(cntLength>0){
 				while(cntLength>0){
 					msg = new char[BUFFER_SIZE];

@@ -4,6 +4,7 @@
 
 #include "http-response.h"
 #include "http-request.h"
+#include <string.h>
 #include <iostream>
 #include <stdlib.h>
 #include <string>
@@ -97,9 +98,12 @@ string SaveToCache(string buffer, string url){
 					cout << "Updating Expires date" << endl;
 					response -> ModifyHeader("Expires",expDate);
 					char * charTmp = new char[response->GetTotalLength()];
-					response -> FormatResponse(charTmp);
-					buffer = charTmp + strTmp;
-					twoH = 1;
+					if(charTmp){
+						memset(charTmp,'\0',response->GetTotalLength());
+						response -> FormatResponse(charTmp);
+						buffer = charTmp +"<!--304 Proxy server comment-->"+ strTmp;
+						twoH = 1;
+					}
 				}
 			}else{
 				cout << "304 but didn't find data in cache" << endl;
@@ -107,25 +111,15 @@ string SaveToCache(string buffer, string url){
 		}
 		case 200: {
 			if(twoH && !isExpired(response -> FindHeader("Expires"))){
-				MakeTreeDir("cache/"+url,"");
-				size_t length = response -> GetTotalLength();
-				char * data = new char[length];
-				if(data){
-					memset (data,'\0',length);
-					buffer = buffer.substr(length, buffer.length());
-					response -> FormatResponse(data);
-					cout << data << endl;
-					buffer = string(data) +"<!--Proxy server comment-->"+ buffer;
-					ofstream file;
-					file.open(("cache/"+url).c_str(),ios::trunc);
-					file << buffer;
-					cout << "Saved to cache:  "<< url << endl;
-					delete(data);
-					file.close();
-				}
+				ofstream file;
+				file.open(("cache/"+url).c_str(),ios::trunc);
+				file << buffer;
+				cout << "Saved to cache:  "<< url << endl;
+				file.close();
 			}
 		}
 	}
+	delete(response);
 	return buffer;
 }
 
@@ -134,8 +128,7 @@ string SaveToCache(string buffer, string url){
 	This function returns an http error message
 */
 string GetErrorPage(int errorNumber){
-	string path = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
-	return data;
+	return "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 }
 
 

@@ -90,13 +90,12 @@ string SaveToCache(string buffer, string url){
 			int cacheDataLength = cacheData.length();
 			if(cacheDataLength>0){
 				buffer = cacheData;
-				string expDate = response -> FindHeader("Expires");
-				int expired = isExpired(expDate);
-				delete(response);
-				response = new HttpResponse;
-				response -> ParseResponse(buffer.c_str(),buffer.length())
-				string strTmp = buffer.substr(response -> GetTotalLength(), buffer.length());;
-				if(!expired){
+				string expDate = response -> FindHeader("Expires");				
+				if(!isExpired(expDate)){
+					delete(response);
+					response = new HttpResponse;
+					response -> ParseResponse(buffer.c_str(),buffer.length())
+					string strTmp = buffer.substr(response -> GetTotalLength(), buffer.length());;
 					cout << "Updating Expires date..." << endl;
 					response -> ModifyHeader("Expires",expDate);
 					char * charTmp = new char[response->GetTotalLength()];

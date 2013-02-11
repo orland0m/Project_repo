@@ -31,7 +31,7 @@ time_t GMTToSeconds(const char *date){
     static const char format[] = "%a, %d %b %Y %H:%M:%S %Z"; // rfc 1123
 	struct tm tm;
 	bzero(&tm, sizeof(tm));
-	if(strptime(str, format, &tm)){
+	if(strptime(cate, format, &tm)){
 		return mktime(&tm);
 	}
     cout << "Could not convert GMT time to seconds: " << strerror(errno) << endl;
@@ -66,7 +66,7 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 			response -> ParseResponse(data.c_str(),dataLength);
 			expires = response -> FindHeader("Expires");
 			cout << "Expires: [" << expires << "]" << endl;
-			if(!returnExpired && isExpired(expires)){
+			if(!returnExpired && (isExpired(expires)&&isExpired(expires))){
 				cout << "Expired!" << endl;
 				if(string("").compare(request->FindHeader("If-Modified-Since")) == 0){
 					cout << "Adding: If-Modified-Since header: "<< expires << endl;

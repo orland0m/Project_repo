@@ -227,13 +227,13 @@ int serverClientConnection(int client, pthread_mutex_t *mutex) {
 			close(remote);
 			return -1;
 		}
-		
+		/*
 		// put received response into string
 		if (serverRetrieveRemoteData(remote, response) != 0) {
 			free(request);
 			close(remote);
 			return -1;
-		}
+		}*/
 		
 		//should probably implement add to cache function here
 

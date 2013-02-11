@@ -114,7 +114,8 @@ string SaveToCache(string buffer, string url){
 					memset (data,'\0',length);
 					buffer = buffer.substr(length, buffer.length());
 					response -> FormatResponse(data);
-					buffer = string(data) +"<ORLANDO>"+ buffer;
+					cout << data << endl;
+					buffer = string(data) +"<!--Proxy server comment-->"+ buffer;
 					ofstream file;
 					file.open(("cache/"+url).c_str(),ios::trunc);
 					file << buffer;
@@ -133,15 +134,7 @@ string SaveToCache(string buffer, string url){
 	This function returns an http error message
 */
 string GetErrorPage(int errorNumber){
-	string path = "cache/stderr/404.html";
-	switch(errorNumber){
-		default:
-			path = "cache/stderr/404.html";
-	}
-	string data = getData(path);
-	if(data.length()<1){
-		data = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
-	}
+	string path = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 	return data;
 }
 

@@ -107,7 +107,7 @@ string SaveToCache(string buffer, string url){
 					if(header){
 						memset(header,'\0',response->GetTotalLength());
 						response -> FormatResponse(header);
-						buffer = string(header) + strTmp;
+						buffer = string(header) +"<hello wrold>"+ strTmp;
 						twoH = 1;
 						delete(header);
 					}

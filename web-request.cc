@@ -1,5 +1,6 @@
 #include "cache.h"
 #include <iostream>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -16,13 +17,50 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 	msg[0] = '\0'; // empty string
 	request->FormatRequest(msg); // fill buffer
 	string tmp = "";
-	
-	//cout << "Sending: {"<< endl << msg << endl << "}" << endl; // debug output
 	int error = 0; // set to 1 if there was a problem
 	
 	int bytes_sent = send(sockfd, msg, msg_len, 0);
 	if(bytes_sent>0){
-		msg = new char[BUFFER_SIZE];
+		int[] endFlags = {0,0,0};
+		while(1){ // read header only
+			msg = new char[1];
+			bytes_read = recv(sockfd, msg, 1, 0);// read header by byte
+			if(bytes_read==1){
+				tmp += msg[0];
+				if(endFlags[0]&&endFlags[1]&&endFlags[2]&&mgs[0]=='\n'){
+					break;
+				}else if(endFlags[0]&&endFlags[1]&&mgs[0]=='\r'){
+					endFlags[2] = 1;
+				}else if(endFlags[0]&&mgs[0]=='\n'){
+					endFlags[1] = 1;
+				}else if(mgs[0]=='\r'){
+					endFlags[0] = 1;
+				}else{
+					endFlags = {0,0,0};
+				}
+			}else{
+				error = 1;
+				break;
+			}
+		}
+		if(!error){
+			HttpResponse header = new HttpResponse;
+			header -> ParseResponse(tmp.c_str(),tmp.length());
+			string cntLengthStr = header -> FindHeader("Content-Length");
+			int cntLength = atoi(cntLengthStr);
+			if(cntLength>0){
+				while(cntLength>0){
+					msg = new char[BUFFER_SIZE];
+					bytes_read = recv(sockfd, msg, BUFFER_SIZE, 0);
+					if(bytes_read<1) break;
+					tmp += string(msg, bytes_read);
+					cntLength -= bytes_read;
+				}
+			}else{
+				error = 1;
+			}
+		}
+		/*msg = new char[BUFFER_SIZE];
 		int bytes_read = recv(sockfd, msg, BUFFER_SIZE, 0);
 		if(bytes_read>0){
 			tmp += string(msg,bytes_read);
@@ -35,7 +73,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 			}
 		}else{
 			error = 1;
-		}
+		} */
 	}else{
 		cerr << "Error sending request to server" << endl;
 		error = 1;

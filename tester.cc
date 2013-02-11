@@ -19,18 +19,18 @@ void ProcessRequest(string rq){
 	request -> ParseRequest(rq.c_str(), rq.length()); // parse request
 	string response = GetFromCache(request, 0); // get non expired file from cache
 	if(response.length()>0){
-		cout << "Bingo! request in cache/" << request->GetHost() << request->GetPath() << endl;
+		cout << "Request in cache/" << request->GetHost() << request->GetPath() << endl;
 		return;
 	}
 	cout << "Making remote request..." << endl;
 	
-	string destPort = "80"; // port
+	string destPort = "80"; // port, BTW I'm not sure how to get the port number from the request
 	string destHost = string(request->GetHost()); // host URL
 	
 	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
 	
 	response = GetFromRemoteServer(request, socket); //requesting to remote server
-	
+	delete request;
 	cout << "Response received! length: "<< endl << response.length() <<endl;
 	// "response" should contain a file ready to be sent to the client, even if there was an error
 }

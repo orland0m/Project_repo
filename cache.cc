@@ -56,7 +56,7 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 			HttpResponse * response = new HttpResponse;
 			response -> ParseResponse(data.c_str(),dataLength);
 			expires = response -> FindHeader("Expires");
-			cout << "Expires: " << expires << endl;
+			cout << "Expires: [" << expires << "]" << endl;
 			if(!returnExpired && isExpired(expires)){
 				cout << "Expired!" << endl;
 				if(string("").compare(request->FindHeader("If-Modified-Since")) == 0){

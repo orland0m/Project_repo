@@ -84,7 +84,7 @@ string SaveToCache(string buffer, string url){
 	switch(code){
 		case 304: {
 			twoH = 0;
-			string cacheData = getData(url); 
+			string cacheData = getData("cache"+url); 
 			int cacheDataLength = cacheData.length();
 			if(cacheDataLength>0){
 				buffer = cacheData;

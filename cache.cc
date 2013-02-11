@@ -5,7 +5,6 @@
 #include "http-response.h"
 #include "http-request.h"
 #include <iostream>
-#include <boost/filesystem.hpp>
 #include <stdlib.h>
 #include <string>
 #include <fstream>
@@ -56,15 +55,18 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 			response -> ParseResponse(data.c_str(),dataLength);
 			if(!returnExpired && isExpired(expires = response -> FindHeader("Expires"))){
 				if(string("").compare(request->FindHeader("If-Modified-Since")) == 0){
+					cout << "Adding If-Modified-Since header" << endl;
 					request->AddHeader("If-Modified-Since", expires);
 				}
 				delete response;
 			}else{
+				cout << "Returning retrieved data from cache" << endl;
     			return data;
     		}
-  		}catch (int e){
+  		}catch (...){
   		}
 	}
+	cout << "Data not in cache" << endl;
 	return "";
 }
 
@@ -77,26 +79,34 @@ string SaveToCache(string buffer, string url){
 	HttpResponse * response = new HttpResponse;
 	response -> ParseResponse(buffer.c_str(), buffer.length());
 	int code = atoi(response->GetStatusCode().c_str());
+	cout << "Processing code " << code << endl;
 	int twoH = 1; // it is used to use 200's save feature. Its purpose is to update the Expires date
 	switch(code){
 		case 304: {
 			twoH = 0;
-			string data = getData(url); 
-			int dataLength = data.length();
-			if(dataLength>0){
+			string cacheData = getData(url); 
+			int cacheDataLength = cacheData.length();
+			if(cacheDataLength>0){
+				buffer = cacheData;
 				string expDate = response -> FindHeader("Expires");
 				int expired = isExpired(expDate);
 				response = new HttpResponse;
-				response -> ParseResponse(data.c_str(),dataLength);
+				string strTmp = string(response -> ParseResponse(buffer.c_str(),cacheDataLength));
 				if(!expired){
+					cout << "Updating Expires date" << endl;
 					response -> ModifyHeader("Expires",expDate);
+					char * charTmp = new char[response->GetTotalLength()];
+					response -> FormatResponse(charTmp);
+					buffer = charTmp + strTmp;
 					twoH = 1;
 				}
+			}else{
+				cout << "304 but didn't find data in cache" << endl;
 			}
 		}
 		case 200: {
 			if(twoH && !isExpired(response -> FindHeader("Expires"))){
-				MakeTreeDir(url,"");
+				MakeTreeDir("cache/"+url,"");
 				size_t length = response -> GetTotalLength();
 				char * data = new char[length];
 				if(data){
@@ -108,7 +118,7 @@ string SaveToCache(string buffer, string url){
 					ofstream file;
 					file.open(("cache/"+url).c_str(),ios::trunc);
 					file << buffer;
-					cout << "saved:  "<< url << endl;
+					cout << "Saved to cache:  "<< url << endl;
 					delete(data);
 					file.close();
 				}
@@ -145,7 +155,7 @@ string GetErrorPage(int errorNumber){
 string GetBaseDir(string& s){
 	char const * tmp = s.c_str();
 	string r = "";
-	for(int i=0; i<s.length(); i++){
+	for(unsigned int i=0; i<s.length(); i++){
 		if(tmp[i]=='/'){ 
 			s = string(s,i+1,s.length());
 			return r+"/";
@@ -171,7 +181,6 @@ void MakeTreeDir(string missing, string done){
 	if(tmp.compare("")==0) return;
 	done += tmp;
 	mkdir(done.c_str(), 0700);
-	cout << "Making: " << done << endl;
 	MakeTreeDir(missing,done);
 }
 

@@ -38,6 +38,7 @@ int isExpired(string date){
 	time(&rawtime);
 	ptm = gmtime ( &rawtime );
 	time_t now = mktime(ptm);
+	now = gmtime(now);
 	time_t docs = GMTToSeconds(date.c_str());
 	return now>docs;
 }

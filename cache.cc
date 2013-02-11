@@ -52,9 +52,13 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 	int dataLength = data.length();
 	if(dataLength>1){
 		try{
+			cout << "Data in cache..." << endl;
 			HttpResponse * response = new HttpResponse;
 			response -> ParseResponse(data.c_str(),dataLength);
-			if(!returnExpired && isExpired(expires = response -> FindHeader("Expires"))){
+			expires = response -> FindHeader("Expires");
+			cout << "Expires: " << expires << endl;
+			if(!returnExpired && isExpired(expires)){
+				cout << "Expires: " << expires << endl;
 				if(string("").compare(request->FindHeader("If-Modified-Since")) == 0){
 					cout << "Adding If-Modified-Since header" << endl;
 					request->AddHeader("If-Modified-Since", expires);
@@ -96,15 +100,15 @@ string SaveToCache(string buffer, string url){
 					response = new HttpResponse;
 					response -> ParseResponse(buffer.c_str(),buffer.length());
 					string strTmp = buffer.substr(response -> GetTotalLength(), buffer.length());;
-					cout << "Updating Expires date..." << endl;
+					cout << "Updating Expires date: " << expDate << endl;
 					response -> ModifyHeader("Expires",expDate);
-					char * charTmp = new char[response->GetTotalLength()];
-					if(charTmp){
-						memset(charTmp,'\0',response->GetTotalLength());
-						response -> FormatResponse(charTmp);
-						buffer = string(charTmp)+"<!--304 Proxy server comment-->" + strTmp;
+					char * header = new char[response->GetTotalLength()];
+					if(header){
+						memset(header,'\0',response->GetTotalLength());
+						response -> FormatResponse(header);
+						buffer = string(header) + strTmp;
 						twoH = 1;
-						delete(charTmp);
+						delete(header);
 					}
 				}
 			}else{
@@ -120,7 +124,7 @@ string SaveToCache(string buffer, string url){
 				cout << "Saved to cache:  "<< url << endl;
 				file.close();
 			}else{
-				cout << "Document expired... not saved!" << endl;
+				cout << "Document expired: "<< response -> FindHeader("Expires") <<". Not saved!" << endl;
 			}
 		}
 	}

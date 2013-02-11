@@ -23,18 +23,13 @@ void MakeTreeDir(string);
 	Used to get the time in seconds of an HTML-date
 */
 time_t GMTToSeconds(const char *date){
-	/*
-	struct tm time_rt={0,0,0,0,0,0,0,0,0};
-    if((char *)strptime(date,"%a, %d %b %Y %T GMT",&time_rt)){
-    	return mktime(&time_rt);
-    }*/
-    static const char format[] = "%a, %d %b %Y %H:%M:%S %Z"; // rfc 1123
+    static const char format[] = "%a, %d %b %Y %H:%M:%S %Z";
 	struct tm tm;
 	bzero(&tm, sizeof(tm));
-	if(strptime(cate, format, &tm)){
+	if(strptime(date, format, &tm)){
 		return mktime(&tm);
 	}
-    cout << "Could not convert GMT time to seconds: " << strerror(errno) << endl;
+    cout << "HTTP-date parse error: " << strerror(errno) << endl;
     return 0;
 }
 
@@ -65,8 +60,8 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 			HttpResponse * response = new HttpResponse;
 			response -> ParseResponse(data.c_str(),dataLength);
 			expires = response -> FindHeader("Expires");
-			cout << "Expires: [" << expires << "]" << endl;
-			if(!returnExpired && (isExpired(expires)&&isExpired(expires))){
+			cout << "Expires: " << expires << endl;
+			if(!returnExpired && isExpired(expires)){
 				cout << "Expired!" << endl;
 				if(string("").compare(request->FindHeader("If-Modified-Since")) == 0){
 					cout << "Adding: If-Modified-Since header: "<< expires << endl;
@@ -74,7 +69,7 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 				}
 				delete response;
 			}else{
-				cout << "Returning retrieved data from cache" << endl;
+				cout << "Returning data from cache" << endl;
 				delete response;
     			return data;
     		}
@@ -188,8 +183,7 @@ string GetBaseDir(string& s){
 	Create a directory tree
 	Can be any path, relative or absolute. It will only try, it doesn't throw erros
 	if it doesn't have permission or the directory is already there.
-	IN: "cache/a/b/c", ""
-		"a/b/c", "cache/"
+	IN: "cache/a/b/c"
 	SIDE EFECT: Will create directory cache/a/b/
 	NOTE: A final slash is needed to create cache/a/b/c/
 	IT will go down to the last leave, even if there are errors.

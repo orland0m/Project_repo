@@ -78,6 +78,18 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 }
 
 
+string cleanCharacters(char * header){
+	string tmp = "";
+	for(int i=0; ;i++){
+		if(header[i]=='\r'&&header[i+1]=='\n'&&header[i+2]=='\r'&&header[i+3]=='\n'){
+			tmp += "\r\n\r\n";
+			break;
+		}
+		tmp += header[i];
+	}
+	return tmp;
+}
+
 
 /**
 	Top level function to save response to cache
@@ -107,7 +119,7 @@ string SaveToCache(string buffer, string url){
 					if(header){
 						memset(header,'\0',response->GetTotalLength());
 						response -> FormatResponse(header);
-						buffer = string(header) +"<hello wrold>"+ strTmp;
+						buffer = cleanCharacters(header)+strTmp;
 						twoH = 1;
 						delete(header);
 					}

@@ -1,3 +1,4 @@
+#include "http-request.h"
 #include "connection-handler.h"
 
 using namespace std;
@@ -132,13 +133,121 @@ int serverRetriveRemoteData(int remote, string& data) {
 		//gets data from remote end
 		int received = recv(remote, buffer, sizeof(remote), 0);
 		if (received < 0) {
-			perror("Retrieve remote data receive error");
+			cerr << "Retrieve remote data receive error" << endl;
 			return -1;
 		} else if (received == 0) { // if nothing received, end connection
 			break;
 		}
-		
+		//adds newly retrieved data to old data
 		data.append(buffer, received);
 	}
+	return 0;
+}
+
+int serverClientConnection(int client, pthread_mutex_t *mutex) {
+	//client buffer
+	//string is used because it is dynamically resizable
+	string buffer = "";
+	
+	//loop until HTTP end is found in buffer
+	while (buffer.find("\r\n\r\n") < 0) {
+		char receiveBuffer[BUFFER_SIZE];
+		
+		//receive data and place in buffer
+		if (recv(client, receiveBuffer, sizeof(receiveBuffer), 0) < 0) {
+			cerr << "Client connection receive error" << endl;
+			return -1;
+		}
+		//append receiving buffer to total buffer
+		buffer.append(receiveBuffer);
+	}
+	
+	//read client request
+	HttpRequest clientRequest;
+	try {
+		clientRequest.ParseRequest(buffer.c_str(), buffer.length());
+	} catch (ParseException requestException) { //handle special cases
+		cerr << "Exception in client connection: " << requestException.what() << endl;
+		//send HTTP 1.0 for backwards compatibility
+		//1.0 and 1.1 shouldn't matter when there are errors anyway
+		string response = "HTTP/1.0 ";
+		
+		//if the GET request is messed up
+		if (strcmp(requestException.what(), "Request is not GET") != 0) {
+			response += "400 Bad Request\r\n\r\n";
+		} else { //it is not a GET request 
+			response += "501 Not Implemented\r\n\r\n";
+		}
+		
+		//send the error response to client
+		if (send(client, response.c_str(), response.length(), 0) < 0) {
+			cerr << "Client Connection send error" << endl;
+		}
+	}
+	
+	//if persistent connection is not working, enable this
+	//clientRequest.ModifyHeader("Connection", "close");
+	
+	//create new request
+	size_t length = clientRequest.GetTotalLength() + 1; //extra for 0 byte
+	char* request = (char*) malloc(length);
+	clientRequest.FormatRequest(request);
+	
+	//if host is not in request already, find host in header or request
+	string host;
+	if (clientRequest.GetHost().length() == 0) {
+		host = clientRequest.FindHeader("Host");
+	} else {
+		host = clientRequest.GetHost();
+	}
+	
+	//url of file to get
+	string path = host + clientRequest.GetPath();
+	
+	//response to send to client
+	string response;
+	
+	//find in local cache
+	if (false) { //if it exists in cache, false is only temporary placeholder
+		return -1;
+	} else { //else it is not in cache, get from remote
+		//establish connection
+		//const char* requires conversion
+		int remote = serverNegotiateClientConnection(host.c_str(), LISTENING_PORT);
+		if (remote < 0) { //client connection error
+			cerr << "Client connection cannot connect to remote host" << endl;
+			free(request);
+			return -1;
+		}
+
+		//send request to remote
+		if (send(remote, request, length, 0) == -1) {
+			cerr << "Client connection cannot send request" << endl;
+			free(request);
+			close(remote);
+			return -1;
+		}
+		
+		// put received response into string
+		if (serverRetrieveRemoteData(remote, response) != 0) {
+			free(request);
+			close(remote);
+			return -1;
+		}
+		
+		//should probably implement add to cache function here
+
+		close(remote);
+	}
+	
+	//send everything back to client
+	if (send(client, response.c_str(), response.length(), 0) < 0) {
+		cerr << "Client connection send error" << endl;
+		free(request);
+		return -1;
+	}
+	
+	//garbage collection
+	free(request);
 	return 0;
 }

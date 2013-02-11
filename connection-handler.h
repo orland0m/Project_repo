@@ -24,6 +24,10 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
+//provided skeletons
+#include "http-response.h"
+#include "http-request.h"
+
 //start the server listening component on defined port
 //ie: int socket = serverStartListening(LISTENING_PORT)
 int serverStartListening(const char* port);
@@ -33,5 +37,8 @@ int serverNegotiateClientConnection(const char* host, const char* port);
 
 //request data and retrieve from remote host
 int serverRetrieveRemoteData(int remote, std::string& data);
+
+//receives HTTP data from client and requests data from remote server
+int serverClientConnection(int client, pthread_mutex_t *mutex);
 
 #endif

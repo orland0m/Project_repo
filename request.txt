@@ -1,3 +1,3 @@
-GET http://www.onenaught.com/posts/17/web-site-performance-expires-header HTTP/1.1\r\n\r\n
-GET http://www.google.com/index.html HTTP/1.1\r\n\r\n
-GET http://www.onenaught.com/posts/17/web-site-performance-expires-header HTTP/1.1\r\nIf-Modified-Since: Sat, 9 Feb 2013 19:43:31 GMT\r\n\r\n
+GET http://www.onenaught.com/posts/17/web-site-performance-expires-header HTTP/1.0\r\n\r\n
+GET http://www.google.com/index.html HTTP/1.0\r\n\r\n
+GET http://www.onenaught.com/posts/17/web-site-performance-expires-header HTTP/1.0\r\nIf-Modified-Since: Sat, 9 Feb 2013 19:43:31 GMT\r\n\r\n

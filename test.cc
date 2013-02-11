@@ -15,7 +15,6 @@
 using namespace std;
 
 void ProcessRequest(string rq){
-	cout << rq << endl;
 	HttpRequest * request = new HttpRequest;
 	request -> ParseRequest(rq.c_str(), rq.length()); // parse request
 	string response = GetFromCache(request, 0); // get non expired file from cache
@@ -60,7 +59,9 @@ int ProcessFile (string name){
 	if (myfile.is_open()){
     	while ( myfile.good() ){
     		getline(myfile,line);
+    		cout << line << endl;
     		ProcessRequest(putCRLF(line.c_str()));
+    		cout << endl;
     	}
     	myfile.close();
 	}else cout << "Unable to open file " << name;

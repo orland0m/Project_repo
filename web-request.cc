@@ -37,6 +37,8 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 					endFlags[1] = 1;
 				}else if(msg[0]=='\r'){
 					endFlags[0] = 1;
+				}else{
+					endFlags[0] = endFlags[1] = endFlags[2] = 0;
 				}
 			}else{
 				error = 1;

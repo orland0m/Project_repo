@@ -23,7 +23,7 @@ def build (env):
     server = env.program (
         target = "http-proxy",
         features = ["cxx", "cxxprogram"],
-        use = 'BOOST BOOST_THREAD',
+        use = 'BOOST BOOST_THREAD BOOST_DATE_TIME',
         source = [
         	"tester.cc",
             "web-request.cc",

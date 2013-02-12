@@ -145,7 +145,7 @@ int serverNegotiateClientConnection(const char* host, const char* port) {
 	return openSocket;
 }
 
-int serverRetriveRemoteData(int remote, string& data) {
+int serverRetrieveRemoteData(int remote, string& data) {
 	while (true) {
 		//buffer used for storing incoming data
 		char buffer[BUFFER_SIZE];
@@ -247,13 +247,13 @@ int serverClientConnection(int client, pthread_mutex_t *mutex) {
 			close(remote);
 			return -1;
 		}
-		/*
+		
 		// put received response into string
 		if (serverRetrieveRemoteData(remote, response) != 0) {
 			free(request);
 			close(remote);
 			return -1;
-		}*/
+		}
 		
 		//should probably implement add to cache function here
 

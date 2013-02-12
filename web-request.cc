@@ -46,7 +46,6 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 			}
 		}
 		if(!error){
-			cout << tmp << endl;
 			HttpResponse * header = new HttpResponse;
 			header -> ParseResponse(tmp.c_str(),tmp.length());
 			string cntLengthStr = header -> FindHeader("Content-Length");

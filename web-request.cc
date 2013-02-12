@@ -43,6 +43,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 				break;
 			}
 		}
+		cout << "Hello world" << endl;
 		if(!error){
 			HttpResponse * header = new HttpResponse;
 			header -> ParseResponse(tmp.c_str(),tmp.length());

@@ -18,6 +18,7 @@ string default_response = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 
 string getData(string);
 void MakeTreeDir(string);
+string GetErrorPage(int);
 
 /**
 	Used to get the time in seconds of an HTML-date

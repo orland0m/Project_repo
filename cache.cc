@@ -64,7 +64,7 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 			if(!returnExpired && isExpired(expires)){
 				cout << "Expired!" << endl;
 				if(string("").compare(request->FindHeader("If-Modified-Since")) == 0){
-					cout << "Adding: If-Modified-Since header: "<< expires << endl;
+					cout << "Adding If-Modified-Since header: "<< expires << endl;
 					request->AddHeader("If-Modified-Since", expires);
 				}
 				delete response;
@@ -104,47 +104,51 @@ string SaveToCache(string buffer, string url){
 	int code = atoi(response->GetStatusCode().c_str());
 	cout << "Processing code " << code << endl;
 	int twoH = 1; // it is used to use 200's save feature. Its purpose is to update the Expires date
-	switch(code){
-		case 304: {
-			twoH = 0;
-			string cacheData = getData("cache/"+url); 
-			int cacheDataLength = cacheData.length();
-			if(cacheDataLength>0){
-				buffer = cacheData;
-				string expDate = response -> FindHeader("Expires");				
-				if(!isExpired(expDate)){
-					delete(response);
-					response = new HttpResponse;
-					response -> ParseResponse(buffer.c_str(),buffer.length());
-					string strTmp = buffer.substr(response -> GetTotalLength(), buffer.length());;
-					cout << "Updating Expires date: " << expDate << endl;
-					response -> ModifyHeader("Expires",expDate);
-					char * header = new char[response->GetTotalLength()];
-					if(header){
-						memset(header,'\0',response->GetTotalLength());
-						response -> FormatResponse(header);
-						buffer = cleanCharacters(header)+strTmp;
-						twoH = 1;
-						delete(header);
+	try{
+		switch(code){
+			case 304: {
+				twoH = 0;
+				string cacheData = getData("cache/"+url); 
+				int cacheDataLength = cacheData.length();
+				if(cacheDataLength>0){
+					buffer = cacheData;
+					string expDate = response -> FindHeader("Expires");				
+					if(!isExpired(expDate)){
+						delete(response);
+						response = new HttpResponse;
+						response -> ParseResponse(buffer.c_str(),buffer.length());
+						string strTmp = buffer.substr(response -> GetTotalLength(), buffer.length());;
+						cout << "Updating Expires date: " << expDate << endl;
+						response -> ModifyHeader("Expires",expDate);
+						char * header = new char[response->GetTotalLength()];
+						if(header){
+							memset(header,'\0',response->GetTotalLength());
+							response -> FormatResponse(header);
+							buffer = cleanCharacters(header)+strTmp;
+							twoH = 1;
+							delete(header);
+						}
 					}
+				}else{
+					cout << "304 but didn't find data in cache" << endl;
 				}
-			}else{
-				cout << "304 but didn't find data in cache" << endl;
+			}
+			case 200: {
+				if(twoH && !isExpired(response -> FindHeader("Expires"))){
+					cout << "Caching response..." << endl;
+					MakeTreeDir("cache/"+url);
+					ofstream file;
+					file.open(("cache/"+url).c_str(),ios::trunc);
+					file << buffer;
+					cout << "Saved to cache:  "<< url << endl;
+					file.close();
+				}else{
+					cout << "Document expired: "<< response -> FindHeader("Expires") <<". Not saved!" << endl;
+				}
 			}
 		}
-		case 200: {
-			if(twoH && !isExpired(response -> FindHeader("Expires"))){
-				cout << "Caching response..." << endl;
-				MakeTreeDir("cache/"+url);
-				ofstream file;
-				file.open(("cache/"+url).c_str(),ios::trunc);
-				file << buffer;
-				cout << "Saved to cache:  "<< url << endl;
-				file.close();
-			}else{
-				cout << "Document expired: "<< response -> FindHeader("Expires") <<". Not saved!" << endl;
-			}
-		}
+	}catch(...){
+		buffer = GetErrorPage(500);
 	}
 	delete(response);
 	return buffer;

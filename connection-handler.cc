@@ -1,4 +1,24 @@
+//C++ libraries
+#include <string>
+#include <iostream>
+
+//C libraries
+#include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+ 
+//C networking libraries
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+
+//provided skeletons
+#include "http-response.h"
 #include "http-request.h"
+
 #include "connection-handler.h"
 
 using namespace std;

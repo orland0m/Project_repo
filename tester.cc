@@ -13,6 +13,7 @@
 #include "connection-handler.h" //handles http connections
 
 using namespace std;
+pthread_mutex_t * mutex;
 
 void ProcessRequest(string rq){
 	HttpRequest * request = new HttpRequest;
@@ -24,7 +25,7 @@ void ProcessRequest(string rq){
 	}
 	cout << "Making remote request..." << endl;
 	
-	string destPort = "80"; // port, BTW I'm not sure how to get the port number from the request
+	string destPort = "80";
 	string destHost = string(request->GetHost()); // host URL
 	
 	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
@@ -65,5 +66,13 @@ int ProcessFile (string name){
     	}
     	myfile.close();
 	}else cout << "Unable to open file " << name;
+	return 0;
+}
+
+int main(){
+	mutex = new pthread_mutex_t;
+	if(mutex)
+	ProcessFile("request.txt");
+	else return 1;
 	return 0;
 }

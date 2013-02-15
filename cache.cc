@@ -51,9 +51,11 @@ int isExpired(string date){
 /**
 	Top level function to get response from cache
 */
-string GetFromCache(HttpRequest * request, int returnExpired){
+string GetFromCache(HttpRequest * request, int returnExpired, pthread_mutex_t *mutex){
 	string expires = "";
+	pthread_mutex_lock(mutex);
 	string data = getData("cache/"+request->GetHost()+request->GetPath()); 
+	pthread_mutex_unlock(mutex);
 	int dataLength = data.length();
 	if(dataLength>1){
 		try{
@@ -99,7 +101,7 @@ string cleanCharacters(char * header){
 /**
 	Top level function to save response to cache
 */
-string SaveToCache(string buffer, string url){
+string SaveToCache(string buffer, string url, pthread_mutex_t *mutex){
 	HttpResponse * response = new HttpResponse;
 	response -> ParseResponse(buffer.c_str(), buffer.length());
 	int code = atoi(response->GetStatusCode().c_str());
@@ -137,12 +139,14 @@ string SaveToCache(string buffer, string url){
 			case 200: {
 				if(twoH && !isExpired(response -> FindHeader("Expires"))){
 					cout << "Caching response..." << endl;
+					pthread_mutex_lock(mutex); // lock writing
 					MakeTreeDir("cache/"+url);
 					ofstream file;
 					file.open(("cache/"+url).c_str(),ios::trunc);
 					file << buffer;
 					cout << "Saved to cache:  "<< url << endl;
 					file.close();
+					pthread_mutex_unlock(mutex); // unlock
 				}else{
 					cout << "Document expired: "<< response -> FindHeader("Expires") <<". Not saved!" << endl;
 				}

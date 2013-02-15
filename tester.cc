@@ -29,6 +29,8 @@ string ProcessRequest(string rq){
 	sprintf(pTMP,"%d",request -> GetPort());
 	string destPort = string(pTMP);
 	string destHost = string(request->GetHost()); // host URL
+	cout << "Host:" << destHost << endl;
+	cout << "Port: " << destPort << endl;
 	
 	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
 	

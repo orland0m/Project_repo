@@ -30,7 +30,7 @@ time_t GMTToSeconds(const char *date){
 	bzero(&tm, sizeof(tm));
 	if(strptime(date, httpFormat, &tm)){
 		time_t timePST = mktime(&tm);
-		tm = gmtime(&timePST);
+		&tm = gmtime(&timePST);
 		strftime(buffer,50,httpFormat,&tm);
 		cout << "File Not Parsed: " << date << endl;
 		cout << "File Parsed: " << buffer << endl;

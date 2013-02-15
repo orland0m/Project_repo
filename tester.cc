@@ -84,6 +84,7 @@ int main(){
 	if(socket<0){
 		return 1;
 	}
+	cout << "Listening..." << endl;
 	for(;;){
 		struct sockaddr_storage their_addr;
 		char s[INET6_ADDRSTRLEN];
@@ -94,6 +95,7 @@ int main(){
 			return 1;
 		}
 		inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
+		
 		string tmp = "";
 		int * endFlags = new int[3];
 		int bytes_read = 0;
@@ -121,6 +123,9 @@ int main(){
 			}
 		}
 		cout << tmp << endl;
+		string response = ProcessRequest(tmp);
+		cout << response << endl;
+		
 	}
 	return 0;
 }

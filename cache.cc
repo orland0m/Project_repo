@@ -25,6 +25,7 @@ static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S %Z";
 */
 time_t GMTToSeconds(const char *date){
     char buffer[50];
+    memset(buffer,'\0',50);
 	struct tm tm;
 	bzero(&tm, sizeof(tm));
 	if(strptime(date, httpFormat, &tm)){
@@ -41,6 +42,7 @@ time_t GMTToSeconds(const char *date){
 int isExpired(string date){
 	time_t rawtime;
 	char buffer[50];
+	memset(buffer,'\0',50);
 	struct tm * ptm;
 	time(&rawtime);
 	ptm = gmtime (&rawtime);

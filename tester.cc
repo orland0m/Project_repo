@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sys/socket.h>
 
 //project wireframe
 #include "http-request.h"
@@ -26,10 +27,8 @@ string ProcessRequest(string rq){
 	char pTMP [20];
 	memset(pTMP, '\0',20);
 	sprintf(pTMP,"%d",request -> GetPort());
-	string destPort = string(pTMP);//+request -> GetPort();
-	cout << "Port: " << destPort << endl;
+	string destPort = string(pTMP);
 	string destHost = string(request->GetHost()); // host URL
-	cout << "Host: " << destHost << endl;
 	
 	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
 	
@@ -72,10 +71,54 @@ int ProcessFile (string name){
 	return 0;
 }
 
+void *get_in_addr(struct sockaddr *sa){
+    if (sa->sa_family == AF_INET) {
+        return &(((struct sockaddr_in*)sa)->sin_addr);
+    }
+    return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
+
 int main(){
-	mutex = new pthread_mutex_t;
-	if(mutex)
-	ProcessFile("request.txt");
-	else return 1;
+	int BUFFER_SIZE = 2048;
+	int socket = serverStartListen(LISTENING_PORT);
+	if(socket<0){
+		return 1;
+	}
+	for(;;){
+		struct sockaddr_storage their_addr;
+		char s[INET6_ADDRSTRLEN];
+		socklen_t sin_size = sizeof their_addr;
+		
+		int client_fd = accept(sock_fd, (struct sockaddr *)&their_addr, &sin_size);
+		if(client_fd<0){
+			return 1;
+		}
+		inet_ntop(their_addr.ss_family(), get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
+		string tmp = "";
+		char * msg;
+		int error = 0;
+		while(1){ // read header only, eventually it has to break
+			msg = new char[1];
+			bytes_read = recv(client_fd, msg, 1, 0);// read header by byte
+			if(bytes_read==1){
+				tmp += msg[0];
+				if(endFlags[0]&&endFlags[1]&&endFlags[2]&&msg[0]=='\n'){
+					break;
+				}else if(endFlags[0]&&endFlags[1]&&msg[0]=='\r'){
+					endFlags[2] = 1;
+				}else if(endFlags[0]&&msg[0]=='\n'){
+					endFlags[1] = 1;
+				}else if(msg[0]=='\r'){
+					endFlags[0] = 1;
+				}else{
+					endFlags[0] = endFlags[1] = endFlags[2] = 0;
+				}
+			}else{
+				error = 1;
+				break;
+			}
+		}
+		cout << tmp << endl;
+	}
 	return 0;
 }

@@ -58,8 +58,6 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd, pthread_mutex_t *
 					tmp += string(msg, bytes_read);
 					cntLength -= bytes_read;
 				}
-			}else{
-				error = 1;
 			}
 		}
 	}else{

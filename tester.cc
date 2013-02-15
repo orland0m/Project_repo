@@ -24,7 +24,7 @@ string ProcessRequest(string rq){
 	}
 	cout << "Making remote request..." << endl;
 	
-	string destPort = string(request -> GetPort());
+	string destPort = ""+request -> GetPort();
 	cout << "Port: " << destPort << endl;
 	string destHost = string(request->GetHost()); // host URL
 	cout << "Host: " << destHost << endl;

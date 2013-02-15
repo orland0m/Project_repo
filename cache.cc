@@ -30,6 +30,7 @@ time_t GMTToSeconds(const char *date){
 	bzero(&tm, sizeof(tm));
 	if(strptime(date, httpFormat, &tm)){
 		strftime(buffer,50,httpFormat,&tm);
+		cout << "Not Parsed: " << date << endl:
 		cout << "File: " << buffer << endl;
 		return mktime(&tm);
 	}
@@ -46,7 +47,7 @@ int isExpired(string date){
 	memset(buffer,'\0',50);
 	struct tm * ptm;
 	time(&rawtime);
-	ptm = gmtime (&rawtime);
+	ptm = gmtime(&rawtime);
 	time_t now = mktime(ptm);
 	strftime(buffer,50,httpFormat,ptm);
 	cout << "Local: " << buffer << endl;

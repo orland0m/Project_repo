@@ -23,8 +23,10 @@ string ProcessRequest(string rq){
 		return response;
 	}
 	cout << "Making remote request..." << endl;
-	
-	string destPort = ""+request -> GetPort();
+	char pTMP [20];
+	memset(pTMP, '\0',20);
+	sprintf(pTMP,"%d",request -> GetPort());
+	string destPort = string(pTMP);//+request -> GetPort();
 	cout << "Port: " << destPort << endl;
 	string destHost = string(request->GetHost()); // host URL
 	cout << "Host: " << destHost << endl;

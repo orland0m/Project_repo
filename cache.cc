@@ -24,11 +24,11 @@ static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S %Z";
 	Used to get the time in seconds of an HTML-date
 */
 time_t GMTToSeconds(const char *date){
-    
+    char buffer[50];
 	struct tm tm;
 	bzero(&tm, sizeof(tm));
 	if(strptime(date, httpFormat, &tm)){
-		cout << "File: " << strftime(buffer,50,httpFormat,ptm);<< endl;
+		cout << "File: " << strftime(buffer,50,httpFormat,tm) << endl;
 		return mktime(&tm);
 	}
     cout << "HTTP-date parse error: " << strerror(errno) << endl;
@@ -45,7 +45,7 @@ int isExpired(string date){
 	time(&rawtime);
 	ptm = gmtime (&rawtime);
 	time_t now = mktime(ptm);
-	cout << "Local: " << strftime (buffer,50,httpFormat,ptm);<< endl;
+	cout << "Local: " << strftime (buffer,50,httpFormat,ptm) << endl;
 	time_t docs = GMTToSeconds(date.c_str());
 	return now>docs;
 }

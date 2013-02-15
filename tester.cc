@@ -133,7 +133,7 @@ int main(){
 		string response = ProcessRequest(string(tmp));
 		cout << response << endl;
 		cout << "Responding... " << endl;
-		int bytes_sent = send(client_fd, tmp, strlen(tmp), 0);
+		int bytes_sent = send(client_fd, response.c_str(), response.length(), 0);
 		if(bytes_sent<0) cout << "Error sending response to client" << endl;
 	}
 	return 0;

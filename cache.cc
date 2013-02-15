@@ -45,6 +45,7 @@ time_t GMTToSeconds(const char *date){
 	struct tm * time = new struct tm;
 	bzero(time, sizeof(struct tm));
 	if(strptime(date, httpFormat, time)){
+		cout << "Daylight saving: "<< time -> tm_isdst << endl;
 		time_t timePST = mktime(time);
 		time = gmtime(&timePST);
 		strftime(buffer,50,httpFormat,time);

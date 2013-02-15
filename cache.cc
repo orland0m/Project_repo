@@ -19,7 +19,7 @@ string default_response = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 string getData(string);
 void MakeTreeDir(string);
 string GetErrorPage(int);
-static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S GMT";
+static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S %Z";
 /**
 	Used to get the time in seconds of an HTML-date
 */
@@ -39,18 +39,20 @@ static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S GMT";
     cout << "HTTP-date parse error: " << strerror(errno) << endl;
     return 0;
 } */
+
+
+string formatDate(struct tm * time){
+	char buffer[80];
+	strftime(buffer,80,httpFormat,time);
+	return string(buffer);
+}
+
 time_t GMTToSeconds(const char *date){
-    char buffer[50];
-    memset(buffer,'\0',50);
 	struct tm * time = new struct tm;
 	bzero(time, sizeof(struct tm));
 	if(strptime(date, httpFormat, time)){
-		cout << "Daylight saving: "<< time -> tm_isdst << endl;
 		time_t timePST = mktime(time);
 		time = gmtime(&timePST);
-		strftime(buffer,50,httpFormat,time);
-		cout << "File Not Parsed: " << date << endl;
-		cout << "File Parsed: " << buffer << endl;
 		return mktime(time);
 	}
     cout << "HTTP-date parse error: " << strerror(errno) << endl;
@@ -62,16 +64,13 @@ time_t GMTToSeconds(const char *date){
 */
 int isExpired(string date){
 	time_t rawtime;
-	char buffer[50];
-	memset(buffer,'\0',50);
 	struct tm * ptm;
 	time(&rawtime);
 	ptm = gmtime(&rawtime);
 	time_t now = mktime(ptm);
-	strftime(buffer,50,httpFormat,ptm);
-	cout << "Daylight saving: "<< ptm -> tm_isdst << endl;
-	cout << "Local date: " << buffer << endl;
+	cout << "Local date: " << formatDate(ptm);
 	time_t docs = GMTToSeconds(date.c_str());
+	cout << "Doc's date: " << formatDate(ptm);
 	return now>docs;
 }
 

@@ -96,7 +96,9 @@ int main(){
 		}
 		inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
 		
-		string tmp = "";
+		char * tmp = new char[1024];
+		int counter = 0;
+		memset(tmp,'\0',1024);
 		int * endFlags = new int[3];
 		int bytes_read = 0;
 		char * msg;
@@ -105,7 +107,7 @@ int main(){
 			msg = new char[1];
 			bytes_read = recv(client_fd, msg, 1, 0);// read header by byte
 			if(bytes_read==1){
-				tmp += msg[0];
+				tmp[counter++] = msg[0];
 				if(endFlags[0]&&endFlags[1]&&endFlags[2]&&msg[0]=='\n'){
 					break;
 				}else if(endFlags[0]&&endFlags[1]&&msg[0]=='\r'){
@@ -123,7 +125,7 @@ int main(){
 			}
 		}
 		cout << tmp << endl;
-		string response = ProcessRequest(tmp);
+		string response = ProcessRequest(string(tmp));
 		cout << response << endl;
 		
 	}

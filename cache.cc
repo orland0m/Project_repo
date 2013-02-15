@@ -69,6 +69,7 @@ int isExpired(string date){
 	ptm = gmtime(&rawtime);
 	time_t now = mktime(ptm);
 	strftime(buffer,50,httpFormat,ptm);
+	cout << "Daylight saving: "<< ptm -> tm_isdst << endl;
 	cout << "Local date: " << buffer << endl;
 	time_t docs = GMTToSeconds(date.c_str());
 	return now>docs;

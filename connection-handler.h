@@ -3,7 +3,7 @@
 
 //define some constants
 #define LISTENING_BACKLOG 100 //maximum listening port requests allowed
-#define LISTENING_PORT "14805" //port for http proxy server to listen on
+#define LISTENING_PORT "14809" //port for http proxy server to listen on
 #define REMOTE_PORT "80" //remote server port to retrieve data from
 #define BUFFER_SIZE 2048 //buffer size for incoming data connection
 

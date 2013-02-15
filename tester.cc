@@ -80,6 +80,7 @@ void *get_in_addr(struct sockaddr *sa){
 
 int main(){
 	int socket = serverStartListen(LISTENING_PORT);
+	
 	if(socket<0){
 		return 1;
 	}

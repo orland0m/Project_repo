@@ -19,7 +19,7 @@ string default_response = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 string getData(string);
 void MakeTreeDir(string);
 string GetErrorPage(int);
-static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S %Z";
+static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S GMT";
 /**
 	Used to get the time in seconds of an HTML-date
 */

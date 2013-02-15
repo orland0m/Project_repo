@@ -19,7 +19,6 @@ pthread_mutex_t * mutex;
 string ProcessRequest(string rq){
 	HttpRequest * request = new HttpRequest;
 	request -> ParseRequest(rq.c_str(), rq.length()); // parse request
-	cout << "Searching in cache" << endl;
 	string response = GetFromCache(request, 0, mutex); // get non expired file from cache
 	if(response.length()>0){
 		return response;

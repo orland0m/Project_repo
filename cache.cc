@@ -82,6 +82,7 @@ string GetFromCache(HttpRequest * request, int returnExpired, pthread_mutex_t *m
 	string data = getData("cache/"+request->GetHost()+request->GetPath()); 
 	pthread_mutex_unlock(mutex);
 	int dataLength = data.length();
+	cout << "Cache working" << endl;
 	if(dataLength>1){
 		try{
 			cout << "Data in cache..." << endl;
@@ -238,6 +239,7 @@ void MakeTreeDir(string missing){
 */
 
 string getData(string filename){
+	cout << "Getting from disk" << endl;
   ifstream in(filename.c_str(), ios::in | ios::binary);
   if (in){
     string contents;

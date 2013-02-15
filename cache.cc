@@ -240,14 +240,16 @@ void MakeTreeDir(string missing){
 
 string getData(string filename){
 	cout << "Getting from disk" << endl;
-  ifstream in(filename.c_str(), ios::in | ios::binary);
-  if (in){
-    string contents;
-    in.seekg(0, ios::end);
-    contents.resize(in.tellg());
-    in.seekg(0, ios::beg);
-    in.read(&contents[0], contents.size());
-    in.close();
+	ifstream in(filename.c_str(), ios::in | ios::binary);
+	if (in){
+    	string contents;
+    	in.seekg(0, ios::end);
+    	int pointer = in.tellg();
+    	if(pointer<1) return "";
+    	contents.resize(pointer);
+    	in.seekg(0, ios::beg);
+    	in.read(&contents[0], contents.size());
+    	in.close();
     return(contents);
   }
   return "";

@@ -18,7 +18,7 @@ pthread_mutex_t * mutex;
 void ProcessRequest(string rq){
 	HttpRequest * request = new HttpRequest;
 	request -> ParseRequest(rq.c_str(), rq.length()); // parse request
-	string response = GetFromCache(request, 0); // get non expired file from cache
+	string response = GetFromCache(request, 0, mutex); // get non expired file from cache
 	if(response.length()>0){
 		cout << "Request in cache/" << request->GetHost() << request->GetPath() << endl;
 		return;
@@ -30,7 +30,7 @@ void ProcessRequest(string rq){
 	
 	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
 	
-	response = GetFromRemoteServer(request, socket); //requesting to remote server
+	response = GetFromRemoteServer(request, socket, mutex); //requesting to remote server
 	delete request;
 	cout << "Response received! length: "<< endl << response.length() <<endl;
 	// "response" should contain a file ready to be sent to the client, even if there was an error

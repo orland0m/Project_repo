@@ -10,7 +10,7 @@
 
 using namespace std;
 
-string GetFromRemoteServer(HttpRequest * request, int& sockfd){
+string GetFromRemoteServer(HttpRequest * request, int& sockfd, pthread_mutex_t *mutex){
 	string response = GetErrorPage(500); // have a response with an error message ready
 	size_t msg_len = request->GetTotalLength(); // message length
 	char * msg = new char[msg_len]; // message buffer
@@ -68,7 +68,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 	}
 	
 	if(!error&&tmp.length()>0){
-		response = SaveToCache(tmp, request->GetHost()+request->GetPath()); 
+		response = SaveToCache(tmp, request->GetHost()+request->GetPath(), mutex); 
 	}else{
 		sockfd = -1;
 	}

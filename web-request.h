@@ -14,6 +14,6 @@ using namespace std;
  * OUT: An http response. That response is ready to be sent to the client.
  *		OUT ARG: If the socket couldn't be used, it's set to -1
  */
-string GetFromRemoteServer(HttpRequest *, int&);
+string GetFromRemoteServer(HttpRequest *, int&, pthread_mutex_t *mutex);
 
 #endif

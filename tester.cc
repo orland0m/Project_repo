@@ -23,6 +23,9 @@ string ProcessRequest(string rq){
 	if(response.length()>0){
 		return response;
 	}
+	char * look = new char[request->GetTotalLength()];
+	request->FormatRequest(look);
+	cout << look;
 	cout << "Making remote request..." << endl;
 	char pTMP [20];
 	memset(pTMP, '\0',20);
@@ -129,7 +132,9 @@ int main(){
 		cout << tmp << endl;
 		string response = ProcessRequest(string(tmp));
 		cout << response << endl;
-		
+		cout << "Responding... " << endl;
+		int bytes_sent = send(client_fd, tmp, strlen(tmp), 0);
+		if(bytes_sent<0) cout << "Error sending response to client" << endl;
 	}
 	return 0;
 }

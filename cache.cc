@@ -28,7 +28,7 @@ time_t GMTToSeconds(const char *date){
 	struct tm tm;
 	bzero(&tm, sizeof(tm));
 	if(strptime(date, httpFormat, &tm)){
-		cout << "File: " << strftime(buffer,50,httpFormat,tm) << endl;
+		cout << "File: " << strftime(buffer,50,httpFormat,&tm) << endl;
 		return mktime(&tm);
 	}
     cout << "HTTP-date parse error: " << strerror(errno) << endl;

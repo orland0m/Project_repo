@@ -23,7 +23,7 @@ static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S %Z";
 /**
 	Used to get the time in seconds of an HTML-date
 */
-time_t GMTToSeconds(const char *date){
+/* time_t GMTToSeconds(const char *date){
     char buffer[50];
     memset(buffer,'\0',50);
 	struct tm tm;
@@ -35,6 +35,22 @@ time_t GMTToSeconds(const char *date){
 		cout << "File Not Parsed: " << date << endl;
 		cout << "File Parsed: " << buffer << endl;
 		return mktime(&tm);
+	}
+    cout << "HTTP-date parse error: " << strerror(errno) << endl;
+    return 0;
+} */
+time_t GMTToSeconds(const char *date){
+    char buffer[50];
+    memset(buffer,'\0',50);
+	struct tm * time = new struct tm;
+	bzero(time, sizeof(struct tm));
+	if(strptime(date, httpFormat, time)){
+		time_t timePST = mktime(&time);
+		time = gmtime(&timePST);
+		strftime(buffer,50,httpFormat,time);
+		cout << "File Not Parsed: " << date << endl;
+		cout << "File Parsed: " << buffer << endl;
+		return mktime(time);
 	}
     cout << "HTTP-date parse error: " << strerror(errno) << endl;
     return 0;

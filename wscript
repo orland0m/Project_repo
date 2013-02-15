@@ -25,13 +25,12 @@ def build (env):
         features = ["cxx", "cxxprogram"],
         use = 'BOOST BOOST_THREAD',
         source = [
-        	"tester.cc",
-            "web-request.cc",
-            "cache.cc",
+            # Put additional files here
+            # ...
+            #
             "http-proxy.cc", # main() function is here
             "http-headers.cc",
             "http-request.cc",
             "http-response.cc",
-			"connection-handler.cc",
             ]
         )

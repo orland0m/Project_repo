@@ -29,9 +29,11 @@ time_t GMTToSeconds(const char *date){
 	struct tm tm;
 	bzero(&tm, sizeof(tm));
 	if(strptime(date, httpFormat, &tm)){
+		time_t timePST = mktime(&tm);
+		tm = gmtime(&timePST);
 		strftime(buffer,50,httpFormat,&tm);
-		cout << "Not Parsed: " << date << endl;
-		cout << "File: " << buffer << endl;
+		cout << "File Not Parsed: " << date << endl;
+		cout << "File Parsed: " << buffer << endl;
 		return mktime(&tm);
 	}
     cout << "HTTP-date parse error: " << strerror(errno) << endl;
@@ -50,7 +52,7 @@ int isExpired(string date){
 	ptm = gmtime(&rawtime);
 	time_t now = mktime(ptm);
 	strftime(buffer,50,httpFormat,ptm);
-	cout << "Local: " << buffer << endl;
+	cout << "Local date: " << buffer << endl;
 	time_t docs = GMTToSeconds(date.c_str());
 	return now>docs;
 }

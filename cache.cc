@@ -45,7 +45,7 @@ time_t GMTToSeconds(const char *date){
 	struct tm * time = new struct tm;
 	bzero(time, sizeof(struct tm));
 	if(strptime(date, httpFormat, time)){
-		time_t timePST = mktime(&time);
+		time_t timePST = mktime(time);
 		time = gmtime(&timePST);
 		strftime(buffer,50,httpFormat,time);
 		cout << "File Not Parsed: " << date << endl;

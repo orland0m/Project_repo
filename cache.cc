@@ -19,15 +19,16 @@ string default_response = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 string getData(string);
 void MakeTreeDir(string);
 string GetErrorPage(int);
-
+static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S %Z";
 /**
 	Used to get the time in seconds of an HTML-date
 */
 time_t GMTToSeconds(const char *date){
-    static const char format[] = "%a, %d %b %Y %H:%M:%S %Z";
+    
 	struct tm tm;
 	bzero(&tm, sizeof(tm));
-	if(strptime(date, format, &tm)){
+	if(strptime(date, httpFormat, &tm)){
+		cout << "File: " << strftime(buffer,50,httpFormat,ptm);<< endl;
 		return mktime(&tm);
 	}
     cout << "HTTP-date parse error: " << strerror(errno) << endl;
@@ -39,10 +40,12 @@ time_t GMTToSeconds(const char *date){
 */
 int isExpired(string date){
 	time_t rawtime;
+	char buffer[50];
 	struct tm * ptm;
 	time(&rawtime);
 	ptm = gmtime (&rawtime);
 	time_t now = mktime(ptm);
+	cout << "Local: " << strftime (buffer,50,httpFormat,ptm);<< endl;
 	time_t docs = GMTToSeconds(date.c_str());
 	return now>docs;
 }

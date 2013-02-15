@@ -79,7 +79,6 @@ void *get_in_addr(struct sockaddr *sa){
 }
 
 int main(){
-	int BUFFER_SIZE = 2048;
 	int socket = serverStartListen(LISTENING_PORT);
 	if(socket<0){
 		return 1;
@@ -89,12 +88,14 @@ int main(){
 		char s[INET6_ADDRSTRLEN];
 		socklen_t sin_size = sizeof their_addr;
 		
-		int client_fd = accept(sock_fd, (struct sockaddr *)&their_addr, &sin_size);
+		int client_fd = accept(socket, (struct sockaddr *)&their_addr, &sin_size);
 		if(client_fd<0){
 			return 1;
 		}
-		inet_ntop(their_addr.ss_family(), get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
+		inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
 		string tmp = "";
+		int * endFlags = new int[3];
+		int bytes_read = 0;
 		char * msg;
 		int error = 0;
 		while(1){ // read header only, eventually it has to break

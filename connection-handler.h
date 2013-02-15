@@ -30,7 +30,7 @@
 
 //start the server listening component on defined port
 //ie: int socket = serverStartListening(LISTENING_PORT)
-int serverStartListening(const char* port);
+int serverStartListen(const char* port);
 
 //creates client connection with the specified host and port
 int serverNegotiateClientConnection(const char* host, const char* port);

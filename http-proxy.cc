@@ -233,7 +233,8 @@ int main (int argc, char *argv[]){
 		pid_t pid = fork();
 		if(tot_connect>=max_connect){
 			int status;
-
+			cout << "Waiting..." << endl;
+			cout <<  "tot_connect: " <<tot_connect << endl << "max_connect: " << max_connect << endl;
 			while ((pid=waitpid(-1, &status, WNOHANG)) != -1){
 				tot_connect--;
 			}

@@ -231,10 +231,12 @@ int main (int argc, char *argv[]){
 			}
 		}
 		pid_t pid = fork();
-		int status;
+		if(tot_connect>=max_connect){
+			int status;
 
-		while ((pid=waitpid(-1, &status, WNOHANG)) != -1){
-			tot_connect--;
+			while ((pid=waitpid(-1, &status, WNOHANG)) != -1){
+				tot_connect--;
+			}
 		}
 
 		//	tot_connect--;

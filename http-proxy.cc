@@ -220,6 +220,7 @@ int main (int argc, char *argv[]){
 	freeaddrinfo(res); // No longer needed
 	// Main loop (listening + accept)
 	while(1){
+		start_again:
 		//cout << "Loop" << endl;
 		addr_size = sizeof their_addr;
 		char s[INET6_ADDRSTRLEN];
@@ -233,7 +234,8 @@ int main (int argc, char *argv[]){
 				tot_connect++;
 			else{
 				//send_reject_message(new_fd);
-				close(new_fd); 
+				cout << "Rejecting connection" << endl; 
+				close(new_fd);
 			}
 		}
 		
@@ -242,6 +244,7 @@ int main (int argc, char *argv[]){
 			cout << getpid() <<": Waiting..." << endl;
 			cout << getpid()<<  ": tot_connect: " <<tot_connect << endl << "max_connect: " << max_connect << endl;
 			wait(&status);
+			goto start_again;
 			//tot_connect--;
 			//while ((pid=waitpid(-1, &status, WNOHANG)) != 0){
 			//	cout << "Decreasing" << endl;

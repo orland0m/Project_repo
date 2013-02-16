@@ -87,10 +87,9 @@ void fun(int client_fd){
 	int endFlags[3];
 	endFlags[0] = endFlags[1] = endFlags[2] = 0;
 	int bytes_read = 0;
-	char * msg = NULL;
+	char msg[] = {'\0'};
 	int error = 0;
 	while(1){ // read header only, eventually it has to break
-		msg = new char[1];
 		msg[0] = '\0';
 		bytes_read = recv(client_fd, msg, 1, 0);// read header by byte
 		if(bytes_read==1){
@@ -110,7 +109,6 @@ void fun(int client_fd){
 			error = 1;
 			break;
 		}
-		delete msg;
 	}
 	if(tmp.length()<2){
 		error = 1;

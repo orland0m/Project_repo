@@ -281,6 +281,7 @@ int main (int argc, char *argv[]){
 			close(new_fd);
 			//if (send(new_fd, "This is the output to the client.\n", 35, 0) == -1)
 			//	perror("send");
+			cout << "Handler process died" << endl;
 			exit(0);
 		}
 		if (pid > 0)

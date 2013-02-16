@@ -66,11 +66,11 @@ using namespace std;
 using namespace std;
 pthread_mutex_t * mutex;
 
-string ProcessRequest(string rq, int& close){
+string ProcessRequest(string rq, int& closeCon){
 	HttpRequest * request = new HttpRequest;
 	request -> ParseRequest(rq.c_str(), rq.length()); // parse request
 	if((string("1.0")).compare(request->GetVersion())){
-		close = 1;
+		closeCon = 1;
 	}
 	string response = GetFromCache(request, 0, mutex); // get non expired file from cache
 	if(response.length()>0){
@@ -86,7 +86,7 @@ string ProcessRequest(string rq, int& close){
 	int socket = serverNegotiateClientConnection(request->GetHost().c_str(), cPort);//created socket
 	response = GetFromRemoteServer(request, socket, mutex); //requesting to remote server
 	if(socket<0){
-		close = 1;
+		closeCon = 1;
 	}
 	close(socket);
 	delete request;

@@ -60,9 +60,9 @@ string ProcessRequest(string rq){
 	string destHost = string(request->GetHost()); // host URL
 	cout << "Host:" << destHost << endl;
 	cout << "Port: " << destPort << endl;
-	
+
 	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
-	
+
 	response = GetFromRemoteServer(request, socket, mutex); //requesting to remote server
 	delete request;
 	return response;
@@ -233,7 +233,7 @@ int main (int argc, char *argv[])
 	// Listen
     if (listen(sockfd, BACKLOG) != 0)
 		cout << "-ERROR: Could not listen on port " << MYPORT << endl;
-	
+
 	cout << "+STATUS: Listening on port " << MYPORT << endl;
 
 	freeaddrinfo(res); // No longer needed

@@ -231,13 +231,13 @@ int main (int argc, char *argv[]){
 			cout << "Increasing" << endl;
 			if (tot_connect < max_connect)
 				tot_connect++;
-			/*else{
+			else{
 				//send_reject_message(new_fd);
 				close(new_fd); 
-			}*/
+			}
 		}
-		pid_t pid = fork();
-		if(tot_connect>=max_connect){
+		
+		for(; tot_connect>=max_connect; tot_connect--){
 			int status;
 			cout << getpid() <<": Waiting..." << endl;
 			cout << getpid()<<  ": tot_connect: " <<tot_connect << endl << "max_connect: " << max_connect << endl;
@@ -247,9 +247,8 @@ int main (int argc, char *argv[]){
 			//	cout << "Decreasing" << endl;
 			//	tot_connect--;
 			//}
-			cout << getpid() << ": Passed loop" << endl;
 		}
-
+		pid_t pid = fork();
 		//	tot_connect--;
 		if (pid == 0){
 			inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);

@@ -26,7 +26,6 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd, pthread_mutex_t *
 		int * endFlags = new int[3];
 		endFlags[0] = endFlags[1] = endFlags[2] = 0;
 		while(1){ // read header only, eventually it has to break
-			cout << "Reading header" << endl;
 			msg = new char[1];
 			bytes_read = recv(sockfd, msg, 1, 0);// read header by byte
 			if(bytes_read==1){

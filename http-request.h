@@ -91,8 +91,7 @@ public:
   /**
    * @brief Get method of the HTTP request
    */
-  MethodEnum
-  GetMethod () const;
+  MethodEnum GetMethod () const;
 
   /**
    * @brief Set method of the HTTP request

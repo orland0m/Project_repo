@@ -83,14 +83,50 @@ void *get_in_addr(struct sockaddr *sa){
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
+void fun(int client_fd){
+	char * tmp = new char[1024];
+	int counter = 0;
+	memset(tmp,'\0',1024);
+	int * endFlags = new int[3];
+	int bytes_read = 0;
+	char * msg;
+	int error = 0;
+	while(1){ // read header only, eventually it has to break
+		msg = new char[1];
+		bytes_read = recv(client_fd, msg, 1, 0);// read header by byte
+		if(bytes_read==1){
+			tmp[counter++] = msg[0];
+			if(endFlags[0]&&endFlags[1]&&endFlags[2]&&msg[0]=='\n'){
+				break;
+			}else if(endFlags[0]&&endFlags[1]&&msg[0]=='\r'){
+				endFlags[2] = 1;
+			}else if(endFlags[0]&&msg[0]=='\n'){
+				endFlags[1] = 1;
+			}else if(msg[0]=='\r'){
+				endFlags[0] = 1;
+			}else{
+				endFlags[0] = endFlags[1] = endFlags[2] = 0;
+			}
+		}else{
+			error = 1;
+			break;
+		}
+	}
+	string response = ProcessRequest(string(tmp));
+	cout << "Responding... " << endl;
+	int bytes_sent = send(client_fd, response.c_str(), response.length(), 0);
+	if(bytes_sent<0) cout << "Error sending response to client" << endl;
+}
+
 int main(){
 	int socket = serverStartListen(LISTENING_PORT);
 	
 	if(socket<0){
 		return 1;
 	}
-	cout << "Listening..." << endl;
+	
 	for(;;){
+		cout << "Listening..." << endl;
 		struct sockaddr_storage their_addr;
 		char s[INET6_ADDRSTRLEN];
 		socklen_t sin_size = sizeof their_addr;
@@ -101,40 +137,7 @@ int main(){
 		}
 		inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
 		
-		char * tmp = new char[1024];
-		int counter = 0;
-		memset(tmp,'\0',1024);
-		int * endFlags = new int[3];
-		int bytes_read = 0;
-		char * msg;
-		int error = 0;
-		while(1){ // read header only, eventually it has to break
-			msg = new char[1];
-			bytes_read = recv(client_fd, msg, 1, 0);// read header by byte
-			if(bytes_read==1){
-				tmp[counter++] = msg[0];
-				if(endFlags[0]&&endFlags[1]&&endFlags[2]&&msg[0]=='\n'){
-					break;
-				}else if(endFlags[0]&&endFlags[1]&&msg[0]=='\r'){
-					endFlags[2] = 1;
-				}else if(endFlags[0]&&msg[0]=='\n'){
-					endFlags[1] = 1;
-				}else if(msg[0]=='\r'){
-					endFlags[0] = 1;
-				}else{
-					endFlags[0] = endFlags[1] = endFlags[2] = 0;
-				}
-			}else{
-				error = 1;
-				break;
-			}
-		}
-		cout << tmp << endl;
-		string response = ProcessRequest(string(tmp));
-		cout << response << endl;
-		cout << "Responding... " << endl;
-		int bytes_sent = send(client_fd, response.c_str(), response.length(), 0);
-		if(bytes_sent<0) cout << "Error sending response to client" << endl;
+		fun(client_fd);
 	}
 	return 0;
 }

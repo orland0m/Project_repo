@@ -80,6 +80,7 @@ string ProcessRequest(string rq, int& closeCon){
 
 
 void fun(int client_fd){
+	cout << "Socket: " << client_fd << endl;
 	receive:
 	int close_connection = 0;
 	string tmp = "";

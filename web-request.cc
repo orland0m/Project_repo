@@ -53,7 +53,6 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd, pthread_mutex_t *
 			int cntLength = atoi(cntLengthStr.c_str());
 			if(cntLength>0){
 				while(cntLength>0){
-					cout << "Reading body" << endl;
 					msg = new char[BUFFER_SIZE];
 					bytes_read = recv(sockfd, msg, BUFFER_SIZE, 0);
 					if(bytes_read<1) break;

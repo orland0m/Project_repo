@@ -41,7 +41,7 @@
 #define BACKLOG 2         // how many pending connections queue will hold
 #define MAXDATASIZE 1024  // the maximum size of data being read
 #define MAXBUFFER 72000   // the maximum size of the buffer
-#define CONCURRENT 2
+#define CONCURRENT 10
 
 using namespace std; 
 
@@ -172,14 +172,12 @@ int recvtimeout(int s, char *buf, int len, int timeout){
 int main (int argc, char *argv[]){
 	// Counter + limit to keep number of clients to 10
 	
-	pid_t * p_list = new pid_t[CONCURRENT];
+	pid_t p_list [CONCURRENT];
 	for(int i=0; i<CONCURRENT; i++){
 		p_list[i] = -1;
 	}
 	
 	mutex = new pthread_mutex_t;
-	//int tot_connect = 0;
-	//int max_connect = CONCURRENT;
     socklen_t addr_size;
     struct addrinfo hints, *res;
     int sockfd, nbytes;
@@ -228,7 +226,6 @@ int main (int argc, char *argv[]){
 	while(1){
 		start_again:
 		int free_pos = -1;
-		//cout << "Loop" << endl;
 		addr_size = sizeof their_addr;
 		char s[INET6_ADDRSTRLEN];
 		int new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
@@ -255,51 +252,21 @@ int main (int argc, char *argv[]){
 				goto start_again;
 			}
 		}
-		/*
-		for(; tot_connect>=max_connect; tot_connect--){
-			int status;
-			cout << getpid() <<": Waiting..." << endl;
-			cout << getpid()<<  ": tot_connect: " <<tot_connect << endl << "max_connect: " << max_connect << endl;
-			wait(&status);
-			goto start_again;
-			//tot_connect--;
-			//while ((pid=waitpid(-1, &status, WNOHANG)) != 0){
-			//	cout << "Decreasing" << endl;
-			//	tot_connect--;
-			//}
-		}*/
 		pid_t pid = fork();
 		if(pid!=0) p_list[free_pos] = pid;
 		
-		//	tot_connect--;
 		if (pid == 0){
 			inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
 			cout<< getpid() << ": Incoming connection accepted: " << *s << endl;
 			nbytes = 0;
-			//char buf[MAXDATASIZE];
-			//string bigBuf;
+			
 			fun(new_fd);
-			/*while ((nbytes = recvtimeout(new_fd, buf, MAXDATASIZE-1, 60)) > 0)
-
-			{
-
-				cout << "Message is: " << buf << endl;
-
-				bigBuf.append(buf,nbytes);
-
-				if((bigBuf.find("\r\n\r\n"))!=string::npos)
-
-					break;
-
-			}*/
 
 			if( nbytes == -1){
 				perror("recv");
 				break;
 			}
 			close(new_fd);
-			//if (send(new_fd, "This is the output to the client.\n", 35, 0) == -1)
-			//	perror("send");
 			cout << "Handler process died" << endl;
 			exit(0);
 		}

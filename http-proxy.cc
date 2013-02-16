@@ -231,7 +231,7 @@ int main (int argc, char *argv[]){
 			}
 		}
 		pid_t pid = fork();
-		//int status;
+		int status;
 
 		while ((pid=waitpid(-1, &status, WNOHANG)) != -1){
 			tot_connect--;

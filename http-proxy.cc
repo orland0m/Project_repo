@@ -125,6 +125,7 @@ void fun(int client_fd){
 		}
 	}
 	if(tmp.length()<2){
+		cout << "Error reading from socket" << endl;
 		error = 1;
 	}
 	if(!error){
@@ -226,7 +227,7 @@ int main (int argc, char *argv[])
 
 	int tot_connect = 0;
 
-	int max_connect = 3;
+	int max_connect = 10;
 
 
 

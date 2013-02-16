@@ -66,12 +66,15 @@ string ProcessRequest(string rq, int& closeCon){
 	sprintf(cPort,"%d",request -> GetPort());
 	
 	int socket = serverNegotiateClientConnection(request->GetHost().c_str(), cPort);//created socket
+	cout<< getpid() << ": Socket set" << endl;
 	response = GetFromRemoteServer(request, socket, mutex); //requesting to remote server
+	cout<< getpid() << ": Response received" << endl;
 	if(socket<0){
 		closeCon = 1;
 	}
 	close(socket);
 	delete request;
+	cout<< getpid() << ": Request processed" << endl;
 	return response;
 }
 

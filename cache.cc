@@ -6,6 +6,7 @@
 #include "http-request.h"
 #include <string.h>
 #include <iostream>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string>
 #include <fstream>

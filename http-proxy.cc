@@ -235,10 +235,11 @@ int main (int argc, char *argv[]){
 			int status;
 			cout << getpid() <<": Waiting..." << endl;
 			cout << getpid()<<  ": tot_connect: " <<tot_connect << endl << "max_connect: " << max_connect << endl;
-			while ((pid=waitpid(-1, &status, WNOHANG)) != 0){
-				cout << "Decreasing" << endl;
-				tot_connect--;
-			}
+			wait(&status);
+			//while ((pid=waitpid(-1, &status, WNOHANG)) != 0){
+			//	cout << "Decreasing" << endl;
+			//	tot_connect--;
+			//}
 			cout << getpid() << ": Passed loop" << endl;
 		}
 

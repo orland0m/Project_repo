@@ -80,7 +80,6 @@ string ProcessRequest(string rq, int& closeCon){
 
 
 void fun(int client_fd){
-	cout << "Socket: " << client_fd << endl;
 	receive:
 	int close_connection = 0;
 	string tmp = "";
@@ -111,7 +110,6 @@ void fun(int client_fd){
 		}
 	}
 	if(tmp.length()<2){
-		cout<< getpid() << ": Error reading from socket" << endl;
 		error = 1;
 	}
 	if(!error){
@@ -128,7 +126,7 @@ void fun(int client_fd){
 			goto receive;
 		}
 	}else{
-		cout << getpid() << ": Error receiving data" << endl;
+		cout << getpid() << ": Socket failed. Connection closed" << endl;
 		close(client_fd);
 	}
 }
@@ -267,7 +265,6 @@ int main (int argc, char *argv[]){
 				break;
 			}
 			close(new_fd);
-			cout << "Handler process died" << endl;
 			exit(0);
 		}
 		if (pid > 0)

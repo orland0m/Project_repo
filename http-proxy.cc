@@ -172,7 +172,7 @@ int recvtimeout(int s, char *buf, int len, int timeout){
 int main (int argc, char *argv[]){
 	// Counter + limit to keep number of clients to 10
 	
-	int * p_list = new int[CONCURRENT];
+	pid_t * p_list = new pid_t[CONCURRENT];
 	for(int i=0; i<CONCURRENT; i++){
 		p_list[i] = -1;
 	}

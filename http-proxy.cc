@@ -171,6 +171,12 @@ int recvtimeout(int s, char *buf, int len, int timeout){
 
 int main (int argc, char *argv[]){
 	// Counter + limit to keep number of clients to 10
+	
+	int * p_list = new int[CONCURRENT];
+	for(int i=0; i<CONCURRENT; i++){
+		p_list[i] = -1;
+	}
+	
 	mutex = new pthread_mutex_t;
 	int tot_connect = 0;
 	int max_connect = CONCURRENT;
@@ -221,24 +227,35 @@ int main (int argc, char *argv[]){
 	// Main loop (listening + accept)
 	while(1){
 		start_again:
+		int free_pos = -1;
 		//cout << "Loop" << endl;
 		addr_size = sizeof their_addr;
 		char s[INET6_ADDRSTRLEN];
 		int new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
 		if (new_fd == -1){
 			continue;
-		}
-		else{
-			cout << "Increasing" << endl;
-			if (tot_connect < max_connect)
-				tot_connect++;
-			else{
-				//send_reject_message(new_fd);
-				cout << "Rejecting connection" << endl; 
+		}else{
+			for(int i=0; i<CONCURRENT; i++){
+				if(p_list[i]<0){
+					free_pos = i;
+					break;
+				}else{
+					int status = 0;
+					pid_t result = waitpid(p_list[i],status, WNOHANG);
+					if(result < 1){
+						continue;
+					}else{
+						free_pos = i;
+						break;
+					}
+				}
+			}
+			if(free_pos<0){
 				close(new_fd);
+				goto start_again;
 			}
 		}
-		
+		/*
 		for(; tot_connect>=max_connect; tot_connect--){
 			int status;
 			cout << getpid() <<": Waiting..." << endl;
@@ -250,8 +267,10 @@ int main (int argc, char *argv[]){
 			//	cout << "Decreasing" << endl;
 			//	tot_connect--;
 			//}
-		}
+		}*/
 		pid_t pid = fork();
+		if(pid!=0) p_list[free_pos] = pid;
+		
 		//	tot_connect--;
 		if (pid == 0){
 			inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);

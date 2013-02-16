@@ -219,6 +219,7 @@ int main (int argc, char *argv[]){
 	freeaddrinfo(res); // No longer needed
 	// Main loop (listening + accept)
 	while(1){
+		cout << "Loop" << endl;
 		addr_size = sizeof their_addr;
 		char s[INET6_ADDRSTRLEN];
 		int new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);

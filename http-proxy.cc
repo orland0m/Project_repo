@@ -238,6 +238,7 @@ int main (int argc, char *argv[]){
 			while ((pid=waitpid(-1, &status, WNOHANG)) != -1){
 				tot_connect--;
 			}
+			cout << "Passed loop" << endl;
 		}
 
 		//	tot_connect--;

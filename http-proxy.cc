@@ -1,4 +1,17 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sys/socket.h>
+
+//project wireframe
+#include "http-request.h"
+#include "http-headers.h"
+#include "http-response.h"
+
+//custom defined files
+#include "web-request.h" /* GetFromRemoteServer */
+#include "cache.h" /* GetFromCache */
+#include "connection-handler.h" //handles http connections
 
 // HEADER FILES
 #include <string.h>
@@ -20,13 +33,112 @@
 
 // UNIVERSAL DEFINITIONS
 #define _WIN32_WINNT 0x501
-#define MYPORT "4233"     // the port users will be connecting to
+#define MYPORT "4234"     // the port users will be connecting to
 #define BACKLOG 2         // how many pending connections queue will hold
 #define MAXDATASIZE 1024  // the maximum size of data being read
 #define MAXBUFFER 72000   // the maximum size of the buffer
 using namespace std; 
 
+using namespace std;
+pthread_mutex_t * mutex;
 
+string ProcessRequest(string rq){
+	HttpRequest * request = new HttpRequest;
+	request -> ParseRequest(rq.c_str(), rq.length()); // parse request
+	string response = GetFromCache(request, 0, mutex); // get non expired file from cache
+	if(response.length()>0){
+		return response;
+	}
+	char * look = new char[request->GetTotalLength()];
+	request->FormatRequest(look);
+	cout << look;
+	cout << "Making remote request..." << endl;
+	char pTMP [20];
+	memset(pTMP, '\0',20);
+	sprintf(pTMP,"%d",request -> GetPort());
+	string destPort = string(pTMP);
+	string destHost = string(request->GetHost()); // host URL
+	cout << "Host:" << destHost << endl;
+	cout << "Port: " << destPort << endl;
+	
+	int socket = serverNegotiateClientConnection(destHost.c_str(), destPort.c_str());//created socket
+	
+	response = GetFromRemoteServer(request, socket, mutex); //requesting to remote server
+	delete request;
+	return response;
+	// "response" should contain a file ready to be sent to the client, even if there was an error
+}
+
+string putCRLF(char const * str){
+	string tmp = "";
+	for(int i=0; str[i]!='\0'; i++){
+		if(str[i]=='\\'&&str[i+1]=='r'){
+			tmp+='\r';
+			i++;
+			continue;
+		}
+		if(str[i]=='\\'&&str[i+1]=='n'){
+			tmp+='\n';
+			i++;
+			continue;
+		}
+		tmp+=str[i];
+	}
+	return tmp;
+}
+
+int ProcessFile (string name){
+	string line;
+	std::ifstream myfile (name.c_str());
+	if (myfile.is_open()){
+    	while ( myfile.good() ){
+    		getline(myfile,line);
+    		cout << line << endl;
+    		ProcessRequest(putCRLF(line.c_str()));
+    		cout << endl;
+    	}
+    	myfile.close();
+	}else cout << "Unable to open file " << name;
+	return 0;
+}
+
+void fun(int client_fd){
+	char * tmp = new char[1024];
+	int counter = 0;
+	memset(tmp,'\0',1024);
+	int * endFlags = new int[3];
+	int bytes_read = 0;
+	char * msg;
+	int error = 0;
+	while(1){ // read header only, eventually it has to break
+		msg = new char[1];
+		bytes_read = recv(client_fd, msg, 1, 0);// read header by byte
+		if(bytes_read==1){
+			tmp[counter++] = msg[0];
+			if(endFlags[0]&&endFlags[1]&&endFlags[2]&&msg[0]=='\n'){
+				break;
+			}else if(endFlags[0]&&endFlags[1]&&msg[0]=='\r'){
+				endFlags[2] = 1;
+			}else if(endFlags[0]&&msg[0]=='\n'){
+				endFlags[1] = 1;
+			}else if(msg[0]=='\r'){
+				endFlags[0] = 1;
+			}else{
+				endFlags[0] = endFlags[1] = endFlags[2] = 0;
+			}
+		}else{
+			error = 1;
+			break;
+		}
+	}
+	cout << "String temp: " << string(tmp) << endl;
+	string response = ProcessRequest(string(tmp));
+	cout << "Responding... " << endl;
+	int bytes_sent = send(client_fd, response.c_str(), response.length(), 0);
+	if(bytes_sent<0) cout << "Error sending response to client" << endl;
+}
+
+//
 void *get_in_addr(struct sockaddr *sa)
 {
     if (sa->sa_family == AF_INET) {
@@ -61,12 +173,14 @@ int recvtimeout(int s, char *buf, int len, int timeout)
     return recv(s, buf, len, 0);
 }
 
+
+
 // Main function
 int main (int argc, char *argv[])
 {
 	// Counter + limit to keep number of clients to 10
 	int tot_connect = 0;
-	int max_connect = 1;
+	int max_connect = 3;
 
     socklen_t addr_size;
     struct addrinfo hints, *res;
@@ -155,7 +269,7 @@ int main (int argc, char *argv[])
 			nbytes = 0;
 			char buf[MAXDATASIZE];
 			string bigBuf;
-			// [CHILD PROCESS: Orlando & Daniel's portion]
+			fun(new_fd);
 			cout << "Waiting for input" << endl;
 			while ((nbytes = recvtimeout(new_fd, buf, MAXDATASIZE-1, 60)) > 0)
 			{
@@ -173,8 +287,8 @@ int main (int argc, char *argv[])
 
 		 	cout << "Server received data: " << bigBuf << endl;
 
-			if (send(new_fd, "This is the output to the client.\n", 35, 0) == -1)
-				perror("send");
+			//if (send(new_fd, "This is the output to the client.\n", 35, 0) == -1)
+			//	perror("send");
 			exit(0);
 		}
 		if (pid > 0);

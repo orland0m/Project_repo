@@ -83,7 +83,7 @@ string ProcessRequest(string rq, int& close){
 	memset(cPort, '\0',20);
 	sprintf(cPort,"%d",request -> GetPort());
 	
-	int socket = serverNegotiateClientConnection(request->GetHost(), cPort);//created socket
+	int socket = serverNegotiateClientConnection(request->GetHost().c_str(), cPort);//created socket
 	response = GetFromRemoteServer(request, socket, mutex); //requesting to remote server
 	if(socket<0){
 		close = 1;

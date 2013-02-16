@@ -62,7 +62,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd, pthread_mutex_t *
 			}
 		}
 	}else{
-		cerr<< getpid() << "Error sending request to server" << endl;
+		cerr<< getpid() << ": Error sending request to server" << endl;
 		error = 1;
 	}
 	

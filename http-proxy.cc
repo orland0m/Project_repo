@@ -69,16 +69,16 @@ pthread_mutex_t * mutex;
 string ProcessRequest(string rq, int& closeCon){
 	HttpRequest * request = new HttpRequest;
 	request -> ParseRequest(rq.c_str(), rq.length()); // parse request
-	if((string("1.0")).compare(request->GetVersion())){
+	if((string("1.0")).compare(request->GetVersion())==0){
 		closeCon = 1;
 	}
 	string response = GetFromCache(request, 0, mutex); // get non expired file from cache
 	if(response.length()>0){
-		cout<< getpid() << "Response in cache..." << endl;
+		cout<< getpid() << ": Response in cache..." << endl;
 		return response;
 	}
 	
-	cout<< getpid() << "Making remote request..." << endl;
+	cout<< getpid() << ": Making remote request..." << endl;
 	char cPort [20];
 	memset(cPort, '\0',20);
 	sprintf(cPort,"%d",request -> GetPort());
@@ -125,23 +125,24 @@ void fun(int client_fd){
 		}
 	}
 	if(tmp.length()<2){
-		cout<< getpid() << "Error reading from socket" << endl;
+		cout<< getpid() << ": Error reading from socket" << endl;
 		error = 1;
 	}
 	if(!error){
 		string response = ProcessRequest(tmp, close_connection);
-		cout<< getpid() << "Sending response to client..." << endl;
+		cout<< getpid() << ": Sending response to client..." << endl;
 		int bytes_sent = send(client_fd, response.c_str(), response.length(), 0);
 		if(bytes_sent<0){ 
-			cout<< getpid() << "Error sending response to client" << endl;
+			cout<< getpid() << ": Error sending response to client" << endl;
 			close(client_fd);
 		}else if(close_connection){
+			cout << getpid() << ": Client wants to close the connection" << endl;
 			close(client_fd);
 		}else{
 			goto receive;
 		}
 	}else{
-		cout << getpid() << "Error receiving data" << endl;
+		cout << getpid() << ": Error receiving data" << endl;
 		close(client_fd);
 	}
 }
@@ -380,7 +381,7 @@ int main (int argc, char *argv[])
 
 			inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
 
-			cout<< getpid() << "Incoming connection accepted: " << *s << endl;
+			cout<< getpid() << ": Incoming connection accepted: " << *s << endl;
 
 			nbytes = 0;
 

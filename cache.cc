@@ -31,7 +31,7 @@ time_t GMTToSeconds(const char *date){
 	if(strptime(date, httpFormat, time)){
 		return mktime(time);
 	}
-    cout<< getpid() << "HTTP-date parse error: " << strerror(errno) << endl;
+    cout<< getpid() << ": HTTP-date parse error: " << strerror(errno) << endl;
     return 0;
 }
 
@@ -60,27 +60,27 @@ string GetFromCache(HttpRequest * request, int returnExpired, pthread_mutex_t *m
 	int dataLength = data.length();
 	if(dataLength>1){
 		try{
-			cout<< getpid() << "Data in cache..." << endl;
+			cout<< getpid() << ": Data in cache..." << endl;
 			HttpResponse * response = new HttpResponse;
 			response -> ParseResponse(data.c_str(),dataLength);
 			expires = response -> FindHeader("Expires");
-			cout<< getpid() << "Expires: " << expires << endl;
+			cout<< getpid() << ": Expires: " << expires << endl;
 			if(!returnExpired && isExpired(expires)){
-				cout<< getpid() << "Expired!" << endl;
+				cout<< getpid() << ": Expired!" << endl;
 				if(string("").compare(request->FindHeader("If-Modified-Since")) == 0){
-					cout<< getpid() << "Adding If-Modified-Since header: "<< expires << endl;
+					cout<< getpid() << ": Adding If-Modified-Since header: "<< expires << endl;
 					request->AddHeader("If-Modified-Since", expires);
 				}
 				delete response;
 			}else{
-				cout<< getpid() << "Returning data from cache" << endl;
+				cout<< getpid() << ": Returning data from cache" << endl;
 				delete response;
     			return data;
     		}
   		}catch (...){
   		}
 	}else{
-		cout<< getpid() << "Data not in cache" << endl;
+		cout<< getpid() << ": Data not in cache" << endl;
 	}
 	return "";
 }
@@ -106,7 +106,7 @@ string SaveToCache(string buffer, string url, pthread_mutex_t *mutex){
 	HttpResponse * response = new HttpResponse;
 	response -> ParseResponse(buffer.c_str(), buffer.length());
 	int code = atoi(response->GetStatusCode().c_str());
-	cout<< getpid() << "cache: Processing code " << code << endl;
+	cout<< getpid() << ": cache: Processing code " << code << endl;
 	int twoH = 1; // it is used to use 200's save feature. Its purpose is to update the Expires date
 	try{
 		switch(code){
@@ -122,7 +122,7 @@ string SaveToCache(string buffer, string url, pthread_mutex_t *mutex){
 						response = new HttpResponse;
 						response -> ParseResponse(buffer.c_str(),buffer.length());
 						string strTmp = buffer.substr(response -> GetTotalLength(), buffer.length());;
-						cout<< getpid() << "Updating Expires date: " << expDate << endl;
+						cout<< getpid() << ": Updating Expires date: " << expDate << endl;
 						response -> ModifyHeader("Expires",expDate);
 						char * header = new char[response->GetTotalLength()];
 						if(header){
@@ -134,22 +134,22 @@ string SaveToCache(string buffer, string url, pthread_mutex_t *mutex){
 						}
 					}
 				}else{
-					cout<< getpid() << "304 but didn't find data in cache" << endl;
+					cout<< getpid() << ": 304 but didn't find data in cache" << endl;
 				}
 			}
 			case 200: {
 				if(twoH && !isExpired(response -> FindHeader("Expires"))){
-					cout<< getpid() << "Caching response..." << endl;
+					cout<< getpid() << ": Caching response..." << endl;
 					pthread_mutex_lock(mutex); // lock writing
 					MakeTreeDir("cache/"+url);
 					ofstream file;
 					file.open(("cache/"+url).c_str(),ios::trunc);
 					file << buffer;
-					cout<< getpid() << "Saved to cache:  "<< url << endl;
+					cout<< getpid() << ": Saved to cache:  "<< url << endl;
 					file.close();
 					pthread_mutex_unlock(mutex); // unlock
 				}else{
-					cout<< getpid() << "Document expired: "<< response -> FindHeader("Expires") <<". Not saved!" << endl;
+					cout<< getpid() << ": Document expired: "<< response -> FindHeader("Expires") <<". Not saved!" << endl;
 				}
 			}
 		}

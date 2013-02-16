@@ -104,6 +104,7 @@ void fun(int client_fd){
 	int error = 0;
 	while(1){ // read header only, eventually it has to break
 		msg = new char[1];
+		//select();
 		bytes_read = recv(client_fd, msg, 1, 0);// read header by byte
 		if(bytes_read==1){
 			tmp += msg[0];
@@ -122,6 +123,9 @@ void fun(int client_fd){
 			error = 1;
 			break;
 		}
+	}
+	if(tmp.length()<2){
+		error = 1;
 	}
 	if(!error){
 		string response = ProcessRequest(tmp, close_connection);

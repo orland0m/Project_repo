@@ -231,10 +231,10 @@ int main (int argc, char *argv[]){
 			cout << "Increasing" << endl;
 			if (tot_connect < max_connect)
 				tot_connect++;
-			else{
+			/*else{
 				//send_reject_message(new_fd);
 				close(new_fd); 
-			}
+			}*/
 		}
 		pid_t pid = fork();
 		if(tot_connect>=max_connect){

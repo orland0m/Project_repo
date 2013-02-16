@@ -41,7 +41,7 @@
 #define BACKLOG 2         // how many pending connections queue will hold
 #define MAXDATASIZE 1024  // the maximum size of data being read
 #define MAXBUFFER 72000   // the maximum size of the buffer
-#define CONCURRENT 1
+#define CONCURRENT 2
 
 using namespace std; 
 
@@ -236,6 +236,7 @@ int main (int argc, char *argv[]){
 			cout << getpid() <<": Waiting..." << endl;
 			cout << getpid()<<  ": tot_connect: " <<tot_connect << endl << "max_connect: " << max_connect << endl;
 			while ((pid=waitpid(-1, &status, WNOHANG)) != -1){
+				cout << "Decreasing" << endl;
 				tot_connect--;
 			}
 			cout << getpid() << ": Passed loop" << endl;

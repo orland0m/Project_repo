@@ -178,8 +178,8 @@ int main (int argc, char *argv[]){
 	}
 	
 	mutex = new pthread_mutex_t;
-	int tot_connect = 0;
-	int max_connect = CONCURRENT;
+	//int tot_connect = 0;
+	//int max_connect = CONCURRENT;
     socklen_t addr_size;
     struct addrinfo hints, *res;
     int sockfd, nbytes;
@@ -241,7 +241,7 @@ int main (int argc, char *argv[]){
 					break;
 				}else{
 					int status = 0;
-					pid_t result = waitpid(p_list[i],status, WNOHANG);
+					pid_t result = waitpid(p_list[i], &status, WNOHANG);
 					if(result < 1){
 						continue;
 					}else{

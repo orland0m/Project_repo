@@ -26,10 +26,10 @@ static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S %Z";
 */
 
 time_t GMTToSeconds(const char *date){
-	struct tm * time = new struct tm;
-	bzero(time, sizeof(struct tm));
-	if(strptime(date, httpFormat, time)){
-		return mktime(time);
+	struct tm time;
+	bzero(&time, sizeof(struct tm));
+	if(strptime(date, httpFormat, &time)){
+		return mktime(&time);
 	}
     cout<< getpid() << ": HTTP-date parse error: " << strerror(errno) << endl;
     return 0;

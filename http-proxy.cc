@@ -57,6 +57,7 @@ string ProcessRequest(string rq, int& closeCon){
 	string response = GetFromCache(request, 0, mutex); // get non expired file from cache
 	if(response.length()>0){
 		cout<< getpid() << ": Response in cache..." << endl;
+		delete request;
 		return response;
 	}
 	
@@ -83,13 +84,14 @@ void fun(int client_fd){
 	receive:
 	int close_connection = 0;
 	string tmp = "";
-	int * endFlags = new int[3];
+	int endFlags[3];
+	endFlags[0] = endFlags[1] = endFlags[2] = 0;
 	int bytes_read = 0;
-	char * msg;
+	char * msg = NULL;
 	int error = 0;
 	while(1){ // read header only, eventually it has to break
 		msg = new char[1];
-		//select();
+		msg[0] = '\0';
 		bytes_read = recv(client_fd, msg, 1, 0);// read header by byte
 		if(bytes_read==1){
 			tmp += msg[0];
@@ -108,6 +110,7 @@ void fun(int client_fd){
 			error = 1;
 			break;
 		}
+		delete msg;
 	}
 	if(tmp.length()<2){
 		error = 1;
@@ -178,7 +181,7 @@ int main (int argc, char *argv[]){
 	mutex = new pthread_mutex_t;
     socklen_t addr_size;
     struct addrinfo hints, *res;
-    int sockfd, nbytes;
+    int sockfd = 0, nbytes = 0;
 	struct sockaddr_storage their_addr;
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;

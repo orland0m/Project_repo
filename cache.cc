@@ -23,29 +23,6 @@ static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S %Z";
 /**
 	Used to get the time in seconds of an HTML-date
 */
-/* time_t GMTToSeconds(const char *date){
-    char buffer[50];
-    memset(buffer,'\0',50);
-	struct tm tm;
-	bzero(&tm, sizeof(tm));
-	if(strptime(date, httpFormat, &tm)){
-		time_t timePST = mktime(&tm);
-		&tm = gmtime(&timePST);
-		strftime(buffer,50,httpFormat,&tm);
-		cout << "File Not Parsed: " << date << endl;
-		cout << "File Parsed: " << buffer << endl;
-		return mktime(&tm);
-	}
-    cout << "HTTP-date parse error: " << strerror(errno) << endl;
-    return 0;
-} */
-
-
-string formatDate(struct tm * time){
-	char buffer[80];
-	strftime(buffer,80,httpFormat,time);
-	return string(buffer);
-}
 
 time_t GMTToSeconds(const char *date){
 	struct tm * time = new struct tm;
@@ -66,9 +43,7 @@ int isExpired(string date){
 	time(&rawtime);
 	ptm = gmtime(&rawtime);
 	time_t now = mktime(ptm);
-	cout << "Local date: " << formatDate(ptm) << endl;
 	time_t docs = GMTToSeconds(date.c_str());
-	cout << "Doc's date: " << formatDate(ptm) << endl;
 	return now>docs;
 }
 
@@ -82,7 +57,6 @@ string GetFromCache(HttpRequest * request, int returnExpired, pthread_mutex_t *m
 	string data = getData("cache/"+request->GetHost()+request->GetPath()); 
 	pthread_mutex_unlock(mutex);
 	int dataLength = data.length();
-	cout << "Cache working" << endl;
 	if(dataLength>1){
 		try{
 			cout << "Data in cache..." << endl;
@@ -131,7 +105,7 @@ string SaveToCache(string buffer, string url, pthread_mutex_t *mutex){
 	HttpResponse * response = new HttpResponse;
 	response -> ParseResponse(buffer.c_str(), buffer.length());
 	int code = atoi(response->GetStatusCode().c_str());
-	cout << "Processing code " << code << endl;
+	cout << "cache: Processing code " << code << endl;
 	int twoH = 1; // it is used to use 200's save feature. Its purpose is to update the Expires date
 	try{
 		switch(code){
@@ -190,7 +164,7 @@ string SaveToCache(string buffer, string url, pthread_mutex_t *mutex){
 	This function returns an http error message
 */
 string GetErrorPage(int errorNumber){
-	return "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
+	return "HTTP/1.0 500 Internal Proxy Error\r\n\r\n";
 }
 
 

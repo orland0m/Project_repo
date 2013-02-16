@@ -1,19 +1,19 @@
+// C++ libraries
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sys/socket.h>
 
-//project wireframe
+// Default libraries
 #include "http-request.h"
 #include "http-headers.h"
 #include "http-response.h"
 
-//custom defined files
-#include "web-request.h" /* GetFromRemoteServer */
+// User libraries
 #include "cache.h" /* GetFromCache */
 #include "connection-handler.h" //handles http connections
 
-// HEADER FILES
+// C libraries
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -21,7 +21,6 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -109,7 +108,6 @@ void fun(int client_fd){
 	int * endFlags = new int[3];
 	int bytes_read = 0;
 	char * msg;
-	int error = 0;
 	while(1){ // read header only, eventually it has to break
 		msg = new char[1];
 		bytes_read = recv(client_fd, msg, 1, 0);// read header by byte
@@ -127,7 +125,6 @@ void fun(int client_fd){
 				endFlags[0] = endFlags[1] = endFlags[2] = 0;
 			}
 		}else{
-			error = 1;
 			break;
 		}
 	}

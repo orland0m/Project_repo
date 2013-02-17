@@ -8,6 +8,6 @@
 	-1 error,
 	-2 timeout of 30 seconds
 */
-int recvtimeout(int, char, int);
+int recvtimeout(int, char *, int);
 
 #endif

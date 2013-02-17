@@ -22,6 +22,7 @@
 using namespace std;
 
 string getData(string);
+int putData(string,string);
 void MakeTreeDir(string);
 string GetErrorPage(int);
 /**
@@ -142,7 +143,7 @@ string SaveToCache(string buffer, string url){
 			case 200: {
 				if(twoH && !isExpired(response -> FindHeader("Expires"))){
 					if(putData(url, buffer)){
-						cout << "Response saved to cache" << endl:
+						cout << "Response saved to cache" << endl;
 					}else{
 						cout << "Failed saving response to file" << endl;
 					}
@@ -207,14 +208,13 @@ void MakeTreeDir(string missing){
 }
 
 /**
-	This function retrieves data from a file on this, you just provide a file name
-	If the file isn't accesible or doesn't exist it returns an empty string
+	Write/Get data from/to files
 */
 
 int putData(string path, string data){
 	int done = 0;
 	MakeTreeDir("cache/"+path);
-	int fd = open(file.c_str(), O_WRONLY);
+	int fd = open(("cache/"+path).c_str(), O_WRONLY);
 	if(fd>0){
 		struct flock fl;
 		fl.l_type   = F_WRLCK;  /* F_RDLCK, F_WRLCK, F_UNLCK    */
@@ -222,9 +222,8 @@ int putData(string path, string data){
 		fl.l_start  = 0;        /* Offset from l_whence         */
 		fl.l_len    = 0;        /* length, 0 = to EOF           */
 		fl.l_pid    = getpid();
-		int new_fd = fcntl(fd, F_SETLKW, &fl);
 		if(fcntl(fd, F_SETLKW, &fl)){
-			truncate(fd,0);
+			ftruncate(fd,0);
 			done = write(fd, data.c_str(), data.length())>0?1:0;
 			fl.l_type   = F_UNLCK;  /* Prepare unlock */
 			fcntl(fd, F_SETLK, &fl); /* unlock */
@@ -234,7 +233,7 @@ int putData(string path, string data){
 }
 
 string getData(string filename){
-	int fd = open(("cache/"+file).c_str(), O_RDONLY);
+	int fd = open(("cache/"+filename).c_str(), O_RDONLY);
 	char * buffer = NULL;
 	string data = "";
 	if(fd>0){

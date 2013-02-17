@@ -204,10 +204,11 @@ void putData(string url, string data){
 
 string getData(string filename){
 	string contents = "";
+	cout << "Trying cache/" << filename << endl;
 	try{
 		path path_name = path("cache/"+filename);
 		if(!exists(path_name)){
-			cout << "No file: "<< path_name.native_file_string() << endl;
+			cout << "No file";
 			goto end;
 		}
 		file_lock f_lock(path_name.native_file_string().c_str());
@@ -217,6 +218,7 @@ string getData(string filename){
     		in.seekg(0, ios::end);
     		int pointer = in.tellg();
     		if(pointer<1){
+    			cout << "Size error" <<endl;
     			contents = "";
     			goto end;
     		}

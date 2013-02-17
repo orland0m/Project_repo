@@ -1,3 +1,11 @@
-Jia Dan Duan
-Orlando Miramontes
-Kunaal Wadhwa
+Jia Dan Duan:
+*connection-handler.h
+*connection-handler.cc
+Orlando Miramontes:
+
+Kunaal Wadhwa:
+
+Combined:
+*http-proxy.cc
+*tester.cc
+*tester.h

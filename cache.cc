@@ -185,12 +185,16 @@ void putData(string url, string data){
 		stringstream ss;
 		ss << path_name.parent_path();
 		string s_parent = ss.str();
-		
-		cout << path_name.parent_path() << endl;
+		ofstream _file;
+		if(!exists(path_name)){
+			_file.open(("cache/"+url).c_str(),ios::trunc);
+			_file.close();
+			_file.flush();
+		}
 		create_directories(s_parent);
-		file_lock f_lock(s_parent.c_str());
+		file_lock f_lock(path_name);
 		sharable_lock<file_lock> sh_lock(f_lock);
-		ofstream file;
+		ofstream _file;
 		file.open(("cache/"+url).c_str(),ios::trunc);
 		file << data;
 		file.close();

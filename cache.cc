@@ -186,7 +186,7 @@ void putData(string url, string data){
 		ss << path_name.parent_path();
 		string s_parent = ss.str();
 		create_directories(s_parent);
-		system("touch "+native_file_string());
+		system("touch "+path_name.native_file_string());
 		file_lock f_lock(path_name.native_file_string().c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
 		ofstream file;

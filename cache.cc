@@ -217,18 +217,19 @@ int putData(string path, string data){
 	MakeTreeDir("cache/"+path);
 	int fd = open(("cache/"+path).c_str(), O_WRONLY|O_CREAT);
 	if(fd>0){
-		cout << "Trying to block" << endl;
 		struct flock fl;
 		fl.l_type   = F_WRLCK;  /* F_RDLCK, F_WRLCK, F_UNLCK    */
 		fl.l_whence = SEEK_SET;
 		fl.l_start  = 0;        /* Offset from l_whence         */
 		fl.l_len    = 0;        /* length, 0 = to EOF           */
 		fl.l_pid    = getpid();
-		if(fcntl(fd, F_SETLKW, &fl)){
+		if(fcntl(fd, F_SETLKW, &fl) == 0){
 			ftruncate(fd,0);
 			done = write(fd, data.c_str(), data.length())>0?1:0;
 			fl.l_type   = F_UNLCK;  /* Prepare unlock */
 			fcntl(fd, F_SETLK, &fl); /* unlock */
+		}else{
+			cout << "Not locked" << endl;
 		}
 	}
 	if(done==0){

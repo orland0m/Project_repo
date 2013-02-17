@@ -22,8 +22,8 @@ def build (env):
 
     server = env.program (
         target = "http-proxy",
-        features = ["cxx", "cxxprogram"],
-        use = 'BOOST BOOST_THREAD',
+        features = ["cxx", "cxxprogram"],#boost/date_time/posix_time/posix_time
+        use = 'BOOST BOOST_THREAD BOOST_DATE_TIME_POSIX_TIME_POSIX_TIME',
         source = [
             "cache.cc",
             "connection-handler.cc",

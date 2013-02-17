@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <string.h>
 
 #define BUFFER_SIZE 1024
 #define TIME_OUT 4

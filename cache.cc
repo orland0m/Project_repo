@@ -214,7 +214,7 @@ void MakeTreeDir(string missing){
 
 int putData(string path, string data){
 	int done = 0;
-	//MakeTreeDir("cache/"+path);
+	MakeTreeDir("cache/"+path);
 	int fd = open(("cache/"+path).c_str(), O_WRONLY|O_CREAT);
 	if(fd>0){
 		struct flock fl;

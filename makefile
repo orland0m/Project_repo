@@ -8,13 +8,16 @@ BOOST_LINK_FLAGS=-lboost_filesystem-mt -lboost_date_time-mt
 BIN_DIR=build/
 EXECUTABLE=$(BIN_DIR)http-proxy
 
-$(EXECUTABLE): $(BIN_DIR)
-	cd $(BIN_DIR) && touch $@
+
+all: $(SOURCES) $(EXECUTABLE) 
+
+#$(EXECUTABLE): $(BIN_DIR)
+#	cd $(BIN_DIR) && touch $@
 
 $(BIN_DIR):
 	mkdir $(BIN_DIR)
 
-all: $(SOURCES) $(EXECUTABLE) 
+
 
 	
 $(EXECUTABLE): $(OBJECTS) 

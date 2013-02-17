@@ -10,13 +10,11 @@ EXECUTABLE=$(BIN_DIR)http-proxy
 
 
 all: $(SOURCES) $(EXECUTABLE) 
-
-#$(EXECUTABLE): $(BIN_DIR)
-#	cd $(BIN_DIR) && touch $@
 	
 $(EXECUTABLE): $(OBJECTS) 
 	mkdir $(BIN_DIR) && touch $@
 	$(CC) $(BOOST_PATH) $(LDFLAGS) $(OBJECTS) -o $@ $(BOOST_LINK_FLAGS)
+	mkdir $(BIN_DIR)obj/ && mv *o $(BIN_DIR)obj/
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@

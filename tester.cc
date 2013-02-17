@@ -12,7 +12,7 @@ int isExpired(string date){
 	int expired = 1;
 	try{
 		ptime pt;
-		time_input_facet format = new time_input_facet("%a, %d %b %Y %H:%M:%S %Z")
+		time_input_facet * format = new time_input_facet("%a, %d %b %Y %H:%M:%S %Z");
 		const locale loc = locale(locale::classic(),format);
 		
 		istringstream is(date);

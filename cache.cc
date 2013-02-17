@@ -1,7 +1,3 @@
-/*
-	Implementation of the function GetFromCache
-*/
-
 #include "http-response.h"
 #include "http-request.h"
 #include <string.h>
@@ -21,44 +17,44 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/interprocess/sync/sharable_lock.hpp>
+#include "boost/date_time/time_zone_base.hpp"
+#include <boost/date_time.hpp>
+
+using namespace boost::posix_time;
 
 using namespace boost::filesystem;
 using namespace boost::interprocess;
+using namespace boost::gregorian;
+using namespace boost::local_time;
+using namespace std;
 
 #define BUFFER_SIZE 1024
-using namespace std;
+
 
 string getData(string);
 void putData(string,string);
-void MakeTreeDir(string);
 string GetErrorPage(int);
-/**
-	Used to get the time in seconds of an HTML-date
-*/
-
-
-time_t GMTToSeconds(const char * date){
-	const char format[] = "%a, %d %b %Y %H:%M:%S %Z";
-	struct tm time;
-	bzero(&time, sizeof(struct tm));
-	if(strptime(date, format, &time)){
-		return mktime(&time);
-	}
-    cout<< getpid() << ": HTTP-date parse error: " << strerror(errno) << endl;
-    return 0;
-}
 
 /**
 	Tests whether a date has expired
 */
 int isExpired(string date){
-	time_t rawtime;
-	struct tm * ptm;
-	time(&rawtime);
-	ptm = gmtime(&rawtime);
-	time_t now = mktime(ptm);
-	time_t docs = GMTToSeconds(date.c_str());
-	return now>docs;
+	int expired = 1;
+	try{
+		ptime pt;
+		time_input_facet format = new time_input_facet("%a, %d %b %Y %H:%M:%S %Z")
+		const locale loc = locale(locale::classic(),format);
+		
+		istringstream is(date);
+        is.imbue(loc);
+        is >> pt;
+        if(pt != ptime())
+		
+		delete format;
+	}catch(...){
+		expired = 1;
+	}
+	return expired;
 }
 
 
@@ -115,11 +111,12 @@ string cleanCharacters(char * header){
 */
 string SaveToCache(string buffer, string url){
 	HttpResponse * response = new HttpResponse;
-	response -> ParseResponse(buffer.c_str(), buffer.length());
-	int code = atoi(response->GetStatusCode().c_str());
-	cout<< getpid() << ": cache: Processing code " << code << endl;
-	int twoH = 1; // it is used to use 200's save feature. Its purpose is to update the Expires date
 	try{
+		cout<< getpid() << ": Caching" << endl;
+		response -> ParseResponse(buffer.c_str(), buffer.length());
+		int code = atoi(response->GetStatusCode().c_str());
+		cout<< getpid() << ": cache: Processing code " << code << endl;
+		int twoH = 1; // it is used to use 200's save feature. Its purpose is to update the Expires date
 		switch(code){
 			case 304: {
 				twoH = 0;

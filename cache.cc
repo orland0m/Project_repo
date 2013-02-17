@@ -207,13 +207,18 @@ void putData(string url, string data){
 string getData(string filename){
 	string contents = "";
 	try{
-		file_lock f_lock(("cache/"+filename).c_str());
+		path path_name = path("cache/"+filename);
+		cout << "native file: " <<path_name.native_file_string()<< endl;
+		file_lock f_lock(path_name.native_file_string().c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
 		ifstream in(filename.c_str(), ios::in | ios::binary);
 		if(in){
     		in.seekg(0, ios::end);
     		int pointer = in.tellg();
-    		if(pointer<1) return "";
+    		if(pointer<1){
+    			contents = "";
+    			goto end;
+    		}
     		contents.resize(pointer);
     		in.seekg(0, ios::beg);
     		in.read(&contents[0], contents.size());
@@ -223,5 +228,6 @@ string getData(string filename){
 		cout << "Read exception" << endl;
 		contents = "";
 	}
+	end:
 	return contents;
 }

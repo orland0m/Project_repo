@@ -206,8 +206,6 @@ void putData(string url, string data){
 
 string getData(string filename){
 	string contents = "";
-	cout << "Trying cache/" << filename << endl;
-	system(("cat cache/"+filename).c_str());
 	try{
 		path path_name = path("cache/"+filename);
 		if(!exists(path_name)){
@@ -216,17 +214,15 @@ string getData(string filename){
 		}
 		file_lock f_lock(path_name.native_file_string().c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
-		ifstream in(filename.c_str(), ios::in | ios::binary);
+		ifstream in(path_name.native_file_string().c_str(), ios::in | ios::binary);
 		if(in){
     		contents.assign((std::istreambuf_iterator<char>(in) ),
                 (std::istreambuf_iterator<char>()));
     		in.close();
   		}
-  		cout << "Contents: " << contents << endl;
 	}catch(interprocess_exception e){
 		cout << "Read exception: "<< e.what() << endl;
 	}catch(...){
-		cout << "Read exception" << endl;
 		contents = "";
 	}
 	end:

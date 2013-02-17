@@ -208,25 +208,17 @@ string getData(string filename){
 	try{
 		path path_name = path("cache/"+filename);
 		if(!exists(path_name)){
-			cout << "No file";
+			cout << "No file"<<endl;
 			goto end;
 		}
 		file_lock f_lock(path_name.native_file_string().c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
 		ifstream in(filename.c_str(), ios::in | ios::binary);
 		if(in){
-    		in.seekg(0, ios::end);
-    		int pointer = in.tellg();
-    		if(pointer<1){
-    			cout << "Size error" <<endl;
-    			contents = "";
-    			goto end;
-    		}
-    		contents.resize(pointer);
-    		in.seekg(0, ios::beg);
-    		in.read(&contents[0], contents.size());
+    		contents.assign(istreambuf_iterator<char>(ifs), streambuf_iterator<char>());
     		in.close();
   		}
+  		cout << "Contents: " << contents << endl;
 	}catch(interprocess_exception e){
 		cout << "Read exception: "<< e.what() << endl;
 	}catch(...){

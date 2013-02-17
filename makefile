@@ -9,9 +9,9 @@ BOOST_PATH= -L/u/cs/grad/yingdi/boost/lib
 BOOST_LINK_FLAGS=-lboost_filesystem-mt -lboost_date_time-mt 
 
 build/http-proxy: build
-    cd build && touch http-proxy
+	cd build && touch $@
 
-dir:
+build:
     mkdir build
 
 all: $(SOURCES) $(EXECUTABLE) 

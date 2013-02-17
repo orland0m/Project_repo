@@ -215,7 +215,7 @@ string getData(string filename){
 		sharable_lock<file_lock> sh_lock(f_lock);
 		ifstream in(filename.c_str(), ios::in | ios::binary);
 		if(in){
-    		contents.assign( (std::istreambuf_iterator<char>(ifs) ),
+    		contents.assign( (std::istreambuf_iterator<char>(in) ),
                 (std::istreambuf_iterator<char>()    ) );
     		in.close();
   		}

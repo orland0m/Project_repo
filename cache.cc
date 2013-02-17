@@ -189,12 +189,14 @@ void putData(string url, string data){
 		system(("touch "+path_name.native_file_string()).c_str());
 		file_lock f_lock(path_name.native_file_string().c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
-		ofstream file;
-		file.open(path_name.native_file_string().c_str(),ios::trunc);
-		file << data;
-		file.flush();
-		file.close();
-		cout << "Wrote: " << path_name.native_file_string() << endl;
+		size_t filedesc = open(path_name.native_file_string().c_str(), O_WRONLY | O_TRUNC);
+    	if(filedesc < 0){
+    		cout << "Error writing" << endl;
+       		return;
+       	}
+		write(filedesc,data.c_str(), data.length());
+		close(filedesc);
+		cout << "Cached: " << path_name.native_file_string() << endl;
 	}catch(interprocess_exception e){
 		cout << "Write exception: "<< e.what() << endl;
 	}catch(...){
@@ -215,8 +217,8 @@ string getData(string filename){
 		sharable_lock<file_lock> sh_lock(f_lock);
 		ifstream in(filename.c_str(), ios::in | ios::binary);
 		if(in){
-    		contents.assign( (std::istreambuf_iterator<char>(in) ),
-                (std::istreambuf_iterator<char>()    ) );
+    		contents.assign((std::istreambuf_iterator<char>(in) ),
+                (std::istreambuf_iterator<char>()));
     		in.close();
   		}
   		cout << "Contents: " << contents << endl;

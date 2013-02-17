@@ -7,7 +7,7 @@ OBJECTS=$(SOURCES:.cc=.o)
 BOOST_PATH= -L/u/cs/grad/yingdi/boost/lib
 BOOST_LINK_FLAGS=-lboost_filesystem-mt -lboost_date_time-mt
 BIN_DIR=build/
-EXECUTABLE=$(BIN_DIR)/http-proxy
+EXECUTABLE=$(BIN_DIR)http-proxy
 
 $(BIN_DIR)/http-proxy: $(BIN_DIR)
 	cd $(BIN_DIR) && touch $@

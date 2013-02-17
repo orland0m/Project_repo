@@ -29,6 +29,7 @@ string GetErrorPage(int);
 	Used to get the time in seconds of an HTML-date
 */
 
+
 time_t GMTToSeconds(const char * date){
 	const char format[] = "%a, %d %b %Y %H:%M:%S %Z";
 	struct tm time;

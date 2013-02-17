@@ -53,7 +53,6 @@ void test_boost(){
 	
     using namespace boost::gregorian;
     using namespace boost::posix_time;
-    using namespace std;
 
     stringstream ss;
 

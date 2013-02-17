@@ -23,7 +23,7 @@ def build (env):
     server = env.program (
         target = "http-proxy",
         features = ["cxx", "cxxprogram"],#boost/date_time/posix_time/posix_time
-        use = 'BOOST BOOST_THREAD BOOST_DATE_TIME_POSIX_TIME_POSIX_TIME',
+        use = 'BOOST BOOST_THREAD boost/date_time/posix_time/posix_time',
         source = [
             "cache.cc",
             "connection-handler.cc",

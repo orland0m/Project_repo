@@ -181,7 +181,7 @@ string GetErrorPage(int errorNumber){
 
 void putData(string url, string data){
 	try{
-		file_lock f_lock("cache/"+url);
+		file_lock f_lock(("cache/"+url).c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
 		path path_name = path("cache/"+url);
 		create_directories(path_name.parent_path());
@@ -197,7 +197,7 @@ void putData(string url, string data){
 string getData(string filename){
 	string contents = "";
 	try{
-		file_lock f_lock("cache/"+filename);
+		file_lock f_lock(("cache/"+filename).c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
 		ifstream in(filename.c_str(), ios::in | ios::binary);
 		if(in){

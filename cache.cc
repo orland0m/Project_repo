@@ -199,6 +199,8 @@ void putData(string url, string data){
 		file << data;
 		file.flush();
 		file.close();
+	}catch(interprocess_exception e){
+		cout << "INTERR_PUT: "<< e.what() << endl;
 	}catch(...){
 		cout << "Exception caught" << endl;
 	}
@@ -224,7 +226,7 @@ string getData(string filename){
     		in.close();
   		}
 	}catch(interprocess_exception e){
-		cout << "INTERR: "<< e.what() << endl;
+		cout << "INTERR_GET: "<< e.what() << endl;
 	}catch(...){
 		cout << "Read exception" << endl;
 		contents = "";

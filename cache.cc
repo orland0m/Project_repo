@@ -25,7 +25,8 @@ static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S %Z";
 	Used to get the time in seconds of an HTML-date
 */
 
-time_t GMTToSeconds(const char *date){
+time_t GMTToSeconds(const char * date){
+	char * format = "%a, %d %b %Y %H:%M:%S %Z";
 	struct tm time;
 	bzero(&time, sizeof(struct tm));
 	if(strptime(date, httpFormat, &time)){

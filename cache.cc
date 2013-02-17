@@ -197,8 +197,8 @@ void putData(string url, string data){
 		ofstream file;
 		file.open(path_name.native_file_string().c_str(),ios::trunc);
 		file << data;
-		file.close();
 		file.flush();
+		file.close();
 	}catch(...){
 		cout << "Exception caught" << endl;
 	}

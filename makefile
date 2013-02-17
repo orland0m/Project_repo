@@ -1,7 +1,8 @@
 CC=g++
 CFLAGS=-c -Wall -Werror
 LDFLAGS=
-SOURCES=tester.cc cache.cc connection-handler.cc http-headers.cc http-request.cc http-response.cc web-request.cc
+#SOURCES=http-proxy.cc cache.cc connection-handler.cc http-headers.cc http-request.cc http-response.cc web-request.cc
+SOURCES=tester.cc
 OBJECTS=$(SOURCES:.cc=.o)
 EXECUTABLE=http-proxy
 BOOST_PATH= -L/u/cs/grad/yingdi/boost/lib

@@ -230,6 +230,9 @@ int putData(string path, string data){
 			fcntl(fd, F_SETLK, &fl); /* unlock */
 		}
 	}
+	if(done==0){
+		 cout<< "Save error: " << strerror(errno) << endl;
+	}
 	return done;
 }
 

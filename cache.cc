@@ -185,13 +185,8 @@ void putData(string url, string data){
 		stringstream ss;
 		ss << path_name.parent_path();
 		string s_parent = ss.str();
-		ofstream _file;
-		if(!exists(path_name)){
-			_file.open(path_name.native_file_string().c_str(),ios::trunc);
-			_file.flush();
-			_file.close();
-		}
 		create_directories(s_parent);
+		system("touch "+native_file_string());
 		file_lock f_lock(path_name.native_file_string().c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
 		ofstream file;

@@ -5,7 +5,7 @@
 using namespace std;
 using namespace boost::filesystem;
 int main(){
-	string path_file = "boost/tester/abc.txt";
+	string path_file = "boost/tester/abc";
 	path file = path(path_file);
 	cout << file.filename() << endl;
 	cout << file.parent_path() << endl;

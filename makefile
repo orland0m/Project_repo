@@ -12,7 +12,7 @@ all: $(SOURCES) $(EXECUTABLE) build
 directories: ${OUT_DIR}
 
 ${OUT_DIR}:
-        ${MKDIR_P} ${OUT_DIR}
+	${MKDIR_P} ${OUT_DIR}
 	
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@

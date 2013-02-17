@@ -66,7 +66,7 @@ string GetFromCache(HttpRequest * request, int returnExpired){
 			cout<< getpid() << ": Data in cache..." << endl;
 			HttpResponse * response = new HttpResponse;
 			response -> ParseResponse(data.c_str(),dataLength);
-			expires = response -> FindHeader("Expires");
+			expires = response -> FindHeader("Expires")+"";
 			cout<< getpid() << ": Expires: " << expires << endl;
 			if(!returnExpired && isExpired(expires)){
 				cout<< getpid() << ": Expired!" << endl;

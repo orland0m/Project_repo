@@ -15,7 +15,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 	string response = GetErrorPage(500); // have a response with an error message ready
 	size_t msg_len = request->GetTotalLength(); // message length
 	char * msg = new char[msg_len]; // message buffer
-	msg[0] = '\0'; // empty string
+	memset(msg, '\0', msg_len);
 	request->FormatRequest(msg); // fill buffer
 	string tmp = "";
 	int error = 0; // set to 1 if there was a problem

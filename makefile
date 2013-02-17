@@ -13,15 +13,9 @@ all: $(SOURCES) $(EXECUTABLE)
 
 #$(EXECUTABLE): $(BIN_DIR)
 #	cd $(BIN_DIR) && touch $@
-
-$(BIN_DIR):
-	mkdir $(BIN_DIR)
-
-
-
 	
 $(EXECUTABLE): $(OBJECTS) 
-	$(BIN_DIR) && cd $(BIN_DIR) && touch $@
+	mkdir $(BIN_DIR) && cd $(BIN_DIR) && touch $@
 	$(CC) $(BOOST_PATH) $(LDFLAGS) $(OBJECTS) -o $@ $(BOOST_LINK_FLAGS)
 
 .cpp.o:

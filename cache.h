@@ -22,7 +22,7 @@ using namespace std;
  * 				header, this method will add the expiration date as an If-Modified-Since header
  *				to the request
  */
-string GetFromCache(HttpRequest *, int, pthread_mutex_t *);
+string GetFromCache(HttpRequest *, int);
 
 
 /**
@@ -48,6 +48,6 @@ string GetErrorPage(int);
  *			with the received data and what data has to be sent to the client
  * SIDE EFFECTS: If the response has non expired date it will be stored in cache/filename
  */
-string SaveToCache(string, string, pthread_mutex_t *mutex);
+string SaveToCache(string, string);
 
 #endif

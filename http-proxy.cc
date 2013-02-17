@@ -46,7 +46,6 @@
 using namespace std; 
 
 using namespace std;
-pthread_mutex_t * mutex;
 
 string ProcessRequest(string rq, int& closeCon){
 	HttpRequest * request = new HttpRequest;
@@ -54,7 +53,7 @@ string ProcessRequest(string rq, int& closeCon){
 	if((string("1.0")).compare(request->GetVersion())==0){
 		closeCon = 1;
 	}
-	string response = GetFromCache(request, 0, mutex); // get non expired file from cache
+	string response = GetFromCache(request, 0); // get non expired file from cache
 	if(response.length()>0){
 		cout<< getpid() << ": Response in cache..." << endl;
 		delete request;
@@ -68,7 +67,7 @@ string ProcessRequest(string rq, int& closeCon){
 	
 	int socket = serverNegotiateClientConnection(request->GetHost().c_str(), cPort);//created socket
 	cout<< getpid() << ": Socket set" << endl;
-	response = GetFromRemoteServer(request, socket, mutex); //requesting to remote server
+	response = GetFromRemoteServer(request, socket); //requesting to remote server
 	cout<< getpid() << ": Response received" << endl;
 	if(socket<0){
 		closeCon = 1;
@@ -175,8 +174,6 @@ int main (int argc, char *argv[]){
 	for(int i=0; i<CONCURRENT; i++){
 		p_list[i] = -1;
 	}
-	
-	mutex = new pthread_mutex_t;
     socklen_t addr_size;
     struct addrinfo hints, *res;
     int sockfd = 0, nbytes = 0;

@@ -13,14 +13,17 @@
 #include <ctime>
 #include <clocale>
 #include <sys/stat.h>
+#include <sys/file.h>
 #include <errno.h>
+#include <stdio.h>
+#include <fcntl.h>
+
+#define BUFFER_SIZE 1024
 using namespace std;
-string default_response = "HTTP/1.1 500 Internal Proxy Error\r\n\r\n";
 
 string getData(string);
 void MakeTreeDir(string);
 string GetErrorPage(int);
-static const char httpFormat[] = "%a, %d %b %Y %H:%M:%S %Z";
 /**
 	Used to get the time in seconds of an HTML-date
 */
@@ -53,11 +56,9 @@ int isExpired(string date){
 /**
 	Top level function to get response from cache
 */
-string GetFromCache(HttpRequest * request, int returnExpired, pthread_mutex_t *mutex){
+string GetFromCache(HttpRequest * request, int returnExpired){
 	string expires = "";
-	pthread_mutex_lock(mutex);
-	string data = getData("cache/"+request->GetHost()+request->GetPath()); 
-	pthread_mutex_unlock(mutex);
+	string data = getData("cache/"+request->GetHost()+request->GetPath());
 	int dataLength = data.length();
 	if(dataLength>1){
 		try{
@@ -103,7 +104,7 @@ string cleanCharacters(char * header){
 /**
 	Top level function to save response to cache
 */
-string SaveToCache(string buffer, string url, pthread_mutex_t *mutex){
+string SaveToCache(string buffer, string url){
 	HttpResponse * response = new HttpResponse;
 	response -> ParseResponse(buffer.c_str(), buffer.length());
 	int code = atoi(response->GetStatusCode().c_str());
@@ -140,15 +141,11 @@ string SaveToCache(string buffer, string url, pthread_mutex_t *mutex){
 			}
 			case 200: {
 				if(twoH && !isExpired(response -> FindHeader("Expires"))){
-					cout<< getpid() << ": Caching response..." << endl;
-					pthread_mutex_lock(mutex); // lock writing
-					MakeTreeDir("cache/"+url);
-					ofstream file;
-					file.open(("cache/"+url).c_str(),ios::trunc);
-					file << buffer;
-					cout<< getpid() << ": Saved to cache:  "<< url << endl;
-					file.close();
-					pthread_mutex_unlock(mutex); // unlock
+					if(putData(url, buffer)){
+						cout << "Response saved to cache" << endl:
+					}else{
+						cout << "Failed saving response to file" << endl;
+					}
 				}else{
 					cout<< getpid() << ": Document expired: "<< response -> FindHeader("Expires") <<". Not saved!" << endl;
 				}
@@ -214,18 +211,51 @@ void MakeTreeDir(string missing){
 	If the file isn't accesible or doesn't exist it returns an empty string
 */
 
+int putData(string path, string data){
+	int done = 0;
+	MakeTreeDir("cache/"+path);
+	int fd = open(file.c_str(), O_WRONLY);
+	if(fd>0){
+		struct flock fl;
+		fl.l_type   = F_WRLCK;  /* F_RDLCK, F_WRLCK, F_UNLCK    */
+		fl.l_whence = SEEK_SET;
+		fl.l_start  = 0;        /* Offset from l_whence         */
+		fl.l_len    = 0;        /* length, 0 = to EOF           */
+		fl.l_pid    = getpid();
+		int new_fd = fcntl(fd, F_SETLKW, &fl);
+		if(fcntl(fd, F_SETLKW, &fl)){
+			truncate(fd,0);
+			done = write(fd, data.c_str(), data.length())>0?1:0;
+			fl.l_type   = F_UNLCK;  /* Prepare unlock */
+			fcntl(fd, F_SETLK, &fl); /* unlock */
+		}
+	}
+	return done;
+}
+
 string getData(string filename){
-	ifstream in(filename.c_str(), ios::in | ios::binary);
-	if (in){
-    	string contents;
-    	in.seekg(0, ios::end);
-    	int pointer = in.tellg();
-    	if(pointer<1) return "";
-    	contents.resize(pointer);
-    	in.seekg(0, ios::beg);
-    	in.read(&contents[0], contents.size());
-    	in.close();
-    return(contents);
-  }
-  return "";
+	int fd = open(("cache/"+file).c_str(), O_RDONLY);
+	char * buffer = NULL;
+	string data = "";
+	if(fd>0){
+		struct flock fl;
+		fl.l_type   = F_RDLCK;  /* F_RDLCK, F_WRLCK, F_UNLCK    */
+		fl.l_whence = SEEK_SET;
+		fl.l_start  = 0;        /* Offset from l_whence         */
+		fl.l_len    = 0;        /* length, 0 = to EOF           */
+		fl.l_pid    = getpid();
+		if(fcntl(fd, F_SETLKW, &fl)){
+			buffer = new char[BUFFER_SIZE];
+			int c_read = read(fd, buffer, BUFFER_SIZE);
+			data.append(string(buffer,c_read));
+			while(c_read==BUFFER_SIZE){
+				c_read = read(fd, buffer, BUFFER_SIZE);
+				data.append(string(buffer,c_read));
+			}
+			fl.l_type   = F_UNLCK;  /* Prepare unlock */
+			fcntl(fd, F_SETLK, &fl); /* unlock */
+		}
+	}
+	delete buffer;
+	return data;
 }

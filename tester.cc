@@ -11,22 +11,21 @@ using namespace std;
 int isExpired(string date){
 	int expired = 1;
 	try{
+		// Create locale
 		ptime pt;
 		const locale loc = locale(locale::classic(),new time_input_facet("%a, %d %b %Y %H:%M:%S %Z"));
-		
+		// Create string stream
 		istringstream is(date);
+		// Format string with custom locale
         is.imbue(loc);
         is >> pt;
-        
+        //Get current time
         ptime curr_time(second_clock::local_time());
-        cout << "Current time: " << curr_time << endl;
-        cout << "File time: " << pt << endl;
 		if(curr_time>pt){
-			cout << "Current time is greater" << endl;
+			expired = 1;
 		}else{
-			cout << "File time is greater" << endl;
+			expired = 0;
 		}
-		//delete format;
 	}catch(...){
 		expired = 1;
 	}

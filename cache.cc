@@ -38,24 +38,28 @@ string GetErrorPage(int);
 /**
 	Tests whether a date has expired
 */
-int isExpired(string date){/*
+int isExpired(string date){
 	int expired = 1;
 	try{
+		// Create locale
 		ptime pt;
-		time_input_facet format = new time_input_facet("%a, %d %b %Y %H:%M:%S %Z")
-		const locale loc = locale(locale::classic(),format);
-		
+		const locale loc = locale(locale::classic(),new time_input_facet("%a, %d %b %Y %H:%M:%S %Z"));
+		// Create string stream
 		istringstream is(date);
+		// Format string with custom locale
         is.imbue(loc);
         is >> pt;
-        if(pt != ptime())
-		
-		delete format;
+        //Get current time
+        ptime curr_time(second_clock::local_time());
+		if(curr_time>pt){
+			expired = 1;
+		}else{
+			expired = 0;
+		}
 	}catch(...){
 		expired = 1;
 	}
-	return expired;*/
-	return 0;
+	return expired;
 }
 
 

@@ -192,6 +192,7 @@ void putData(string url, string data){
 		file.close();
 		file.flush();
 	}catch(...){
+		cout << "Exception caught" << endl;
 	}
 }
 

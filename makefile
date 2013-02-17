@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-c -Wall -Werror
 LDFLAGS=
-SOURCES=cache.cc connection-handler.cc http-headers.cc http-proxy.cc http-request.cc http-response.cc web-request.cc
+SOURCES=tester.cc cache.cc connection-handler.cc http-headers.cc http-request.cc http-response.cc web-request.cc
 OBJECTS=$(SOURCES:.cc=.o)
 EXECUTABLE=http-proxy
 

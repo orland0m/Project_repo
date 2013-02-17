@@ -17,6 +17,9 @@
 #include <errno.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <boost/filesystem.hpp>
+
+using namespace boost::filesystem;
 
 #define BUFFER_SIZE 1024
 using namespace std;
@@ -213,55 +216,9 @@ void MakeTreeDir(string missing){
 */
 
 int putData(string path, string data){
-	int done = 0;
-	MakeTreeDir("cache/"+path);
-	int fd = open(("cache/"+path).c_str(), O_WRONLY|O_CREAT);
-	if(fd>0){
-		struct flock fl;
-		fl.l_type   = F_WRLCK;  /* F_RDLCK, F_WRLCK, F_UNLCK    */
-		fl.l_whence = SEEK_SET;
-		fl.l_start  = 0;        /* Offset from l_whence         */
-		fl.l_len    = 0;        /* length, 0 = to EOF           */
-		fl.l_pid    = getpid();
-		cout << "Trying to lock" << endl;
-		if(fcntl(fd, F_SETLKW, &fl) == 0){
-			ftruncate(fd,0);
-			done = write(fd, data.c_str(), data.length())>0?1:0;
-			fl.l_type   = F_UNLCK;  /* Prepare unlock */
-			fcntl(fd, F_SETLK, &fl); /* unlock */
-		}else{
-			cout << "Not locked" << endl;
-		}
-	}
-	if(done==0){
-		 cout<< "Save error: " << strerror(errno) << endl;
-	}
-	return done;
+	create_directories(path);
 }
 
 string getData(string filename){
-	int fd = open(("cache/"+filename).c_str(), O_RDONLY);
-	char * buffer = NULL;
-	string data = "";
-	if(fd>0){
-		struct flock fl;
-		fl.l_type   = F_RDLCK;  /* F_RDLCK, F_WRLCK, F_UNLCK    */
-		fl.l_whence = SEEK_SET;
-		fl.l_start  = 0;        /* Offset from l_whence         */
-		fl.l_len    = 0;        /* length, 0 = to EOF           */
-		fl.l_pid    = getpid();
-		if(fcntl(fd, F_SETLKW, &fl)){
-			buffer = new char[BUFFER_SIZE];
-			int c_read = read(fd, buffer, BUFFER_SIZE);
-			data.append(string(buffer,c_read));
-			while(c_read==BUFFER_SIZE){
-				c_read = read(fd, buffer, BUFFER_SIZE);
-				data.append(string(buffer,c_read));
-			}
-			fl.l_type   = F_UNLCK;  /* Prepare unlock */
-			fcntl(fd, F_SETLK, &fl); /* unlock */
-		}
-	}
-	delete buffer;
-	return data;
+	
 }

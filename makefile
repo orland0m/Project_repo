@@ -12,7 +12,7 @@ build/http-proxy: build
 	cd build && touch $@
 
 build:
-    mkdir build
+	mkdir build
 
 all: $(SOURCES) $(EXECUTABLE) 
 

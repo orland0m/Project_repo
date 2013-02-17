@@ -217,6 +217,7 @@ int putData(string path, string data){
 	MakeTreeDir("cache/"+path);
 	int fd = open(("cache/"+path).c_str(), O_WRONLY|O_CREAT);
 	if(fd>0){
+		cout << "Trying to block" << endl;
 		struct flock fl;
 		fl.l_type   = F_WRLCK;  /* F_RDLCK, F_WRLCK, F_UNLCK    */
 		fl.l_whence = SEEK_SET;

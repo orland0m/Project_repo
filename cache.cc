@@ -182,9 +182,13 @@ string GetErrorPage(int errorNumber){
 void putData(string url, string data){
 	try{
 		path path_name = path("cache/"+url);
+		stringstream ss;
+		ss << path_name.parent_path();
+		string s_parent = ss.str();
+		
 		cout << path_name.parent_path() << endl;
-		create_directories(path_name.parent_path());
-		file_lock f_lock((path_name.parent_path()+"").c_str());
+		create_directories(s_parent);
+		file_lock f_lock(s_parent.c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
 		ofstream file;
 		file.open(("cache/"+url).c_str(),ios::trunc);

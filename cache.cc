@@ -29,7 +29,7 @@ using namespace boost::interprocess;
 using namespace std;
 
 string getData(string);
-int putData(string,string);
+void putData(string,string);
 void MakeTreeDir(string);
 string GetErrorPage(int);
 /**
@@ -123,7 +123,7 @@ string SaveToCache(string buffer, string url){
 		switch(code){
 			case 304: {
 				twoH = 0;
-				string cacheData = getData("cache/"+url); 
+				string cacheData = getData(url); 
 				int cacheDataLength = cacheData.length();
 				if(cacheDataLength>0){
 					buffer = cacheData;
@@ -179,11 +179,11 @@ string GetErrorPage(int errorNumber){
 	Write/Get data from/to files
 */
 
-void putData(string path, string data){
+void putData(string url, string data){
 	try{
-		file_lock f_lock("cache/"+path);
+		file_lock f_lock("cache/"+url);
 		sharable_lock<file_lock> sh_lock(f_lock);
-		path path_name = path("cache/"+path);
+		path path_name = path("cache/"+url);
 		create_directories(path_name.parent_path());
 		ofstream file;
 		file.open(("cache/"+url).c_str(),ios::trunc);
@@ -197,7 +197,7 @@ void putData(string path, string data){
 string getData(string filename){
 	string contents = "";
 	try{
-		file_lock f_lock("cache/"+path);
+		file_lock f_lock("cache/"+filename);
 		sharable_lock<file_lock> sh_lock(f_lock);
 		ifstream in(filename.c_str(), ios::in | ios::binary);
 		if(in){
@@ -208,7 +208,6 @@ string getData(string filename){
     		in.seekg(0, ios::beg);
     		in.read(&contents[0], contents.size());
     		in.close();
-    		in.flush()
   		}
 	}catch(...){
 		contents = "";

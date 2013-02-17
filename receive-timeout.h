@@ -1,5 +1,5 @@
-#ifndef _WEB_REQUEST_
-#define _WEB_REQUEST_
+#ifndef _RECEIVE_TIMEOUT_
+#define _RECEIVE_TIMEOUT_
 
 /**
 	recvtimeout's contract:

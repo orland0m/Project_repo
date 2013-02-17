@@ -5,5 +5,9 @@
 using namespace std;
 using namespace boost::filesystem;
 int main(){
-	create_directories("boost/tester/abc.txt");
+	string path_file = "boost/tester/abc.txt";
+	path file = path(path);
+	cout << file.root_directory() << endl;
+	cout << file.root_path() << endl;
+	//create_directories();
 }

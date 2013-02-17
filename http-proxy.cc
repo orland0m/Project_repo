@@ -30,7 +30,7 @@
 #include "connection-handler.h" //handles http connections
 #include "receive-timeout.h" /* recvtimeout */
 
-#define MYPORT "4236"     // the port users will be connecting to
+#define MYPORT "14805"     // the port users will be connecting to
 #define BACKLOG 2         // how many pending connections queue will hold
 #define MAXDATASIZE 1024  // the maximum size of data being read
 #define MAXBUFFER 72000   // the maximum size of the buffer

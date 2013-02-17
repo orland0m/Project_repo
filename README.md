@@ -1,10 +1,12 @@
 General
 =======
 
-To learn more about ./waf, refer to http://code.google.com/p/waf/
-and http://waf.googlecode.com/svn/docs/wafbook/single.html
+This is a simple HTTP Proxy made in C++
 
-Ideally, you will need only to add your source files in wscript, which is basically a Python program.
+Preconditions:
+Usable port: 14805
+Permissions to write on the directory where the project is. Plus all directories beneath it.
+Boost libraries under /u/cs/grad/yingdi/boost/ 
 
 How to use skeleton
 ===================
@@ -16,21 +18,12 @@ Due to restrictions on lnxsrv, several steps necessary to compile and run (if yo
     export PATH=/usr/local/cs/bin:$PATH
     export LD_LIBRARY_PATH=/u/cs/grad/yingdi/boost/lib:/usr/local/lib64/:$LD_LIBRARY_PATH
 
-2. To configure environment
 
-    ./waf configure
+2. To build/rebuild the code
 
-If there are any errors, please email me.
+    make clean && make
 
-3. To build/rebuild the code
-
-    ./waf
-
-4. All compiled executables are located in build/, so you can run them as this:
-
-    build/http-get
-
-or 
+3. All compiled executables are located in build/, so you can run them as this:
 
     build/http-proxy
 

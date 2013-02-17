@@ -6,7 +6,7 @@
 Cache functionality
 -cache.h
 -cache.cc
-Web request functionality using existing file descriptor
+Web request functionality using already existing file descriptor
 -web-request.h
 -web-request.cc
 -makefile
@@ -14,4 +14,5 @@ Web request functionality using existing file descriptor
 ===Kunaal Wadhwa:
 
 Combined:
+-receive-timeout.cc
 -http-proxy.cc

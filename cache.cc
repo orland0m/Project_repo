@@ -223,6 +223,7 @@ int putData(string path, string data){
 		fl.l_start  = 0;        /* Offset from l_whence         */
 		fl.l_len    = 0;        /* length, 0 = to EOF           */
 		fl.l_pid    = getpid();
+		cout << "Trying to lock" << endl;
 		if(fcntl(fd, F_SETLKW, &fl) == 0){
 			ftruncate(fd,0);
 			done = write(fd, data.c_str(), data.length())>0?1:0;

@@ -220,6 +220,7 @@ string getData(string filename){
     		in.close();
   		}
 	}catch(...){
+		cout << "Read exception" << endl;
 		contents = "";
 	}
 	return contents;

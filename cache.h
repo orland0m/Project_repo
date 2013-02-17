@@ -5,9 +5,13 @@
 #ifndef _CACHE_
 #define _CACHE_
 
+//C++ libraries
 #include <iostream>
+
+// User defined libraries
 #include "http-request.h"
 #include "http-response.h"
+
 using namespace std;
 
 /**
@@ -20,24 +24,18 @@ using namespace std;
  *		would never allow it.
  * SIDE EFFECTS: If the file was expired, and the request doesn't have an If-Modified-Since
  * 				header, this method will add the expiration date as an If-Modified-Since header
- *				to the request
+ *				to the request in the first argument
  */
 string GetFromCache(HttpRequest *, int);
 
 
 /**
  * GetErrorPage's contract:
- * IN: Integer. That integer is to be a valid http error code that is already stored
- * 		in cache.
- * OUT: The html error page corresponding to that error code.
- * NOTES: Not fully implemented. Right now it returns a google 404, or 500 if there was a
- *			problem reading.
- * PRECONDITIONS: when requesting an error page, e.g. 404, there has to be an http response
- * 				stored in cache/stderr/<ERROR_NUMBER>.html, otherwise it will return 
- *				a 500 response error loaded from memory
+ * IN: string. A message to add to a 500 type error
+ * OUT: A 500 html error message with the message appended to it.
  */
 
-string GetErrorPage(int);
+string GetErrorPage(string);
 
 /**
  * SaveToCache's contract:
@@ -46,7 +44,7 @@ string GetErrorPage(int);
  		if it the file doesn't need to be cached then it will return the first argument.
  * NOTE: Ideally you pass all responses to this function and it will determine what to do
  *			with the received data and what data has to be sent to the client
- * SIDE EFFECTS: If the response has non expired date it will be stored in cache/filename
+ * SIDE EFFECTS: If the response has a non expired date it will be stored in cache/filename
  */
 string SaveToCache(string, string);
 

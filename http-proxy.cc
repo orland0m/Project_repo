@@ -1,10 +1,23 @@
+// C++ libraries
+
 #include <iostream>
 #include <fstream>
 #include <string>
+
+// Linux libraries
 #include <sys/socket.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/wait.h>
 
-
+// C libraries
+#include <string.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
 
 //project wireframe
 #include "http-request.h"
@@ -15,31 +28,8 @@
 #include "web-request.h" /* GetFromRemoteServer */
 #include "cache.h" /* GetFromCache */
 #include "connection-handler.h" //handles http connections
+#include "receive-timeout.h" /* recvtimeout */
 
-// HEADER FILES
-
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <string.h>
-#include <unistd.h>
-
-
-
-// UNIVERSAL DEFINITIONS
-//#define _WIN32_WINNT 0x501
 #define MYPORT "4236"     // the port users will be connecting to
 #define BACKLOG 2         // how many pending connections queue will hold
 #define MAXDATASIZE 1024  // the maximum size of data being read
@@ -48,80 +38,72 @@
 
 using namespace std; 
 
-
-void test_boost(){
-	
-    using namespace boost::gregorian;
-    using namespace boost::posix_time;
-
-    stringstream ss;
-
-    /****** format strings ******/
-    time_facet* output_facet = new time_facet();
-    time_input_facet* input_facet = new time_input_facet();
-    ss.imbue(locale(ss.getloc(), output_facet));
-    ss.imbue(locale(ss.getloc(), input_facet));
-    output_facet->format(time_facet::iso_time_format_extended_specifier);
-    input_facet->format(time_input_facet::iso_time_format_extended_specifier);
-    ptime t(second_clock::local_time());
-    ss << t;
-    cout << ss.str() << endl; // 2012-08-03 23:46:38
-    ss.str("2000-01-31 12:34:56");
-    ss >> t;
-    assert(t.date().year() == 2000);
-    assert(t.date().month() == 1);
-    assert(t.date().day() == 31);
-    assert(t.time_of_day().hours() == 12);
-    assert(t.time_of_day().minutes() == 34);
-    assert(t.time_of_day().seconds() == 56);
-}
-
+/**
+	ProcessRequest's contract
+	IN: string: http-request, int = 0
+	OUT: string: http-response
+	SIDE EFFECT: If there was some kind of error in the socket, or the http version is 1.0, 
+	this function will set the second argument to 1. Meaning the socket with the client
+	has to be closed.
+*/
 string ProcessRequest(string rq, int& closeCon){
-	HttpRequest * request = new HttpRequest;
-	request -> ParseRequest(rq.c_str(), rq.length()); // parse request
-	if((string("1.0")).compare(request->GetVersion())==0){
-		closeCon = 1;
-	}
-	string response = GetFromCache(request, 0); // get non expired file from cache
-	if(response.length()>0){
-		cout<< getpid() << ": Response in cache..." << endl;
+	try{
+		// parse request
+		HttpRequest * request = new HttpRequest;
+		request -> ParseRequest(rq.c_str(), rq.length()); // parse request
+		if((string("1.0")).compare(request->GetVersion())==0){ // version = 1.0
+			closeCon = 1;
+		}
+		string response = GetFromCache(request, 0); // get non expired file from cache
+		if(response.length()>0){
+			cout<< getpid() << ": Response in cache..." << endl;
+			delete request;
+			return response;
+		}
+		// Content wasn't in cache
+		cout<< getpid() << ": Making remote request..." << endl;
+		// get port
+		char cPort [20];
+		memset(cPort, '\0',20);
+		sprintf(cPort,"%d",request -> GetPort());
+		// Create socket with remote server
+		int socket = serverNegotiateClientConnection(request->GetHost().c_str(), cPort);
+		//requesting to remote server
+		response = GetFromRemoteServer(request, socket);
+		cout<< getpid() << ": Response received" << endl;
+		if(socket<0){ // Error using created socket
+			closeCon = 1;
+		}
+		close(socket);
 		delete request;
+		cout<< getpid() << ": Serving response" << endl;
 		return response;
+	}catch(...){
 	}
-	
-	cout<< getpid() << ": Making remote request..." << endl;
-	char cPort [20];
-	memset(cPort, '\0',20);
-	sprintf(cPort,"%d",request -> GetPort());
-	
-	int socket = serverNegotiateClientConnection(request->GetHost().c_str(), cPort);//created socket
-	cout<< getpid() << ": Socket set" << endl;
-	response = GetFromRemoteServer(request, socket); //requesting to remote server
-	cout<< getpid() << ": Response received" << endl;
-	if(socket<0){
-		closeCon = 1;
-	}
-	close(socket);
-	delete request;
-	cout<< getpid() << ": Request processed" << endl;
-	return response;
+	return GetErrorPage("There was an error processing your request");
 }
 
 
-void fun(int client_fd){
-	receive:
-	int close_connection = 0;
-	string tmp = "";
-	int endFlags[3];
-	endFlags[0] = endFlags[1] = endFlags[2] = 0;
+/**
+	This function will handle any open client connection from beginning to end
+*/
+
+void HandleClientConnection(int client_fd){
+	// In case the protocol is 1.1
+	receive: 
+	int close_connection = 0; // flag to close connection
+	string tmp = ""; // temporary to store response
+	int endFlags[3]; // flags used to read header only
+	endFlags[0] = endFlags[1] = endFlags[2] = 0; // init flags
 	int bytes_read = 0;
-	char msg[] = {'\0'};
+	char msg[] = {'\0'}; // aux to read header by byte
 	int error = 0;
 	while(1){ // read header only, eventually it has to break
 		msg[0] = '\0';
-		bytes_read = recv(client_fd, msg, 1, 0);// read header by byte
+		bytes_read = recvtimeout(client_fd, msg, 1);// read header by byte
 		if(bytes_read==1){
 			tmp += msg[0];
+			// check if header has ended yet
 			if(endFlags[0]&&endFlags[1]&&endFlags[2]&&msg[0]=='\n'){
 				break;
 			}else if(endFlags[0]&&endFlags[1]&&msg[0]=='\r'){
@@ -138,10 +120,12 @@ void fun(int client_fd){
 			break;
 		}
 	}
-	if(tmp.length()<2){
+	// if there was an error reading from the socket
+	if(tmp.length()<1){
 		error = 1;
 	}
 	if(!error){
+		// Process this request
 		string response = ProcessRequest(tmp, close_connection);
 		cout<< getpid() << ": Sending response to client..." << endl;
 		int bytes_sent = send(client_fd, response.c_str(), response.length(), 0);
@@ -151,7 +135,7 @@ void fun(int client_fd){
 		}else if(close_connection){
 			cout << getpid() << ": Client wants to close the connection" << endl;
 			close(client_fd);
-		}else{
+		}else{ // http 1.1
 			goto receive;
 		}
 	}else{
@@ -166,30 +150,6 @@ void *get_in_addr(struct sockaddr *sa){
         return &(((struct sockaddr_in*)sa)->sin_addr);
     }
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
-}
-
-
-
-// Same function as recv; with a timeout limit (param timeout)
-
-// Retval: -1: error, -2: timeout
-
-int recvtimeout(int s, char *buf, int len, int timeout){
-    fd_set fds;
-    int n;
-    struct timeval tv;
-    // set up the file descriptor set
-    FD_ZERO(&fds);
-    FD_SET(s, &fds);
-    // set up the struct timeval for the timeout
-    tv.tv_sec = timeout;
-    tv.tv_usec = 0;
-    // wait until timeout or data received
-    n = select(s+1, &fds, NULL, NULL, &tv);
-    if (n == 0) return -2; // timeout!
-    if (n == -1) return -1; // error
-    // data must be here, so do a normal recv()
-    return recv(s, buf, len, 0);
 }
 
 
@@ -285,7 +245,7 @@ int main (int argc, char *argv[]){
 			cout<< getpid() << ": Incoming connection accepted: " << *s << endl;
 			nbytes = 0;
 			
-			fun(new_fd);
+			HandleClientConnection(new_fd);
 
 			if( nbytes == -1){
 				perror("recv");

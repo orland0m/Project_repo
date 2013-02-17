@@ -1,11 +1,17 @@
-Jia Dan Duan:
+===Jia Dan Duan:
 -connection-handler.h
 -connection-handler.cc
-Orlando Miramontes:
 
-Kunaal Wadhwa:
+===Orlando Miramontes:
+Cache functionality
+-cache.h
+-cache.cc
+Web request functionality using existing file descriptor
+-web-request.h
+-web-request.cc
+-makefile
+
+===Kunaal Wadhwa:
 
 Combined:
 -http-proxy.cc
--tester.cc
--tester.h

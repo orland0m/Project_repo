@@ -21,6 +21,7 @@ $(BIN_DIR):
 
 	
 $(EXECUTABLE): $(OBJECTS) 
+	$(BIN_DIR) && cd $(BIN_DIR) && touch $@
 	$(CC) $(BOOST_PATH) $(LDFLAGS) $(OBJECTS) -o $@ $(BOOST_LINK_FLAGS)
 
 .cpp.o:

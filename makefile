@@ -5,7 +5,7 @@ SOURCES=tester.cc cache.cc connection-handler.cc http-headers.cc http-request.cc
 OBJECTS=$(SOURCES:.cc=.o)
 EXECUTABLE=http-proxy
 BOOST= -L/u/cs/grad/yingdi/boost/lib
-BOOST_OP=-lboost_system
+BOOST_OP=-lboost_filesystem-mt 
 
 all: $(SOURCES) $(EXECUTABLE) 
 

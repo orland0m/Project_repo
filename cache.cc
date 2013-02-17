@@ -207,6 +207,7 @@ void putData(string url, string data){
 string getData(string filename){
 	string contents = "";
 	cout << "Trying cache/" << filename << endl;
+	system(("cat cache/"+filename).c_str());
 	try{
 		path path_name = path("cache/"+filename);
 		if(!exists(path_name)){

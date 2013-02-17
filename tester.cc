@@ -21,7 +21,7 @@ int isExpired(string date){
         ptime curr_time(second_clock::local_time());
         cout << "Current time: " << curr_time << endl;
         cout << "File time: " << pt << endl;
-		if(cur_time>pt){
+		if(curr_time>pt){
 			cout << "Current time is greater" << endl;
 		}else{
 			cout << "File time is greater" << endl;

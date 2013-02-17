@@ -15,19 +15,20 @@ using namespace std;
 string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 	string response = GetErrorPage(500); // have a response with an error message ready
 	size_t msg_len = request->GetTotalLength(); // message length
-	char * msg = new char[msg_len]; // message buffer
-	memset(msg, '\0', msg_len);
+	char * msg = new char[msg_len+1]; // message buffer
+	memset(msg, '\0', msg_len+1);
 	request->FormatRequest(msg); // fill buffer
 	string tmp = "";
 	int error = 0; // set to 1 if there was a problem
 	
 	int bytes_sent = send(sockfd, msg, msg_len, 0);
+	delete msg;
 	if(bytes_sent>0){
 		int bytes_read;
-		int * endFlags = new int[3];
+		int endFlags[3];
 		endFlags[0] = endFlags[1] = endFlags[2] = 0;
+		msg = new char[1];
 		while(1){ // read header only, eventually it has to break
-			msg = new char[1];
 			bytes_read = recv(sockfd, msg, 1, 0);// read header by byte
 			if(bytes_read==1){
 				tmp += msg[0];
@@ -47,6 +48,7 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 				break;
 			}
 		}
+		delete msg;
 		if(!error){
 			HttpResponse * header = new HttpResponse;
 			header -> ParseResponse(tmp.c_str(),tmp.length());
@@ -58,9 +60,11 @@ string GetFromRemoteServer(HttpRequest * request, int& sockfd){
 					bytes_read = recv(sockfd, msg, BUFFER_SIZE, 0);
 					if(bytes_read<1) break;
 					tmp += string(msg, bytes_read);
+					delete msg;
 					cntLength -= bytes_read;
 				}
 			}
+			delete header;
 		}
 	}else{
 		cerr<< getpid() << ": Error sending request to server" << endl;

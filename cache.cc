@@ -208,7 +208,6 @@ string getData(string filename){
 	string contents = "";
 	try{
 		path path_name = path("cache/"+filename);
-		cout << "native file: " <<path_name.native_file_string()<< endl;
 		file_lock f_lock(path_name.native_file_string().c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
 		ifstream in(filename.c_str(), ios::in | ios::binary);
@@ -224,6 +223,8 @@ string getData(string filename){
     		in.read(&contents[0], contents.size());
     		in.close();
   		}
+	}catch(interprocess_exception e){
+		cout << "INTERR: "<< e.what() << endl;
 	}catch(...){
 		cout << "Read exception" << endl;
 		contents = "";

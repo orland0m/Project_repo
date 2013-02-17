@@ -38,7 +38,7 @@ string GetErrorPage(int);
 /**
 	Tests whether a date has expired
 */
-int isExpired(string date){
+int isExpired(string date){/*
 	int expired = 1;
 	try{
 		ptime pt;
@@ -54,7 +54,8 @@ int isExpired(string date){
 	}catch(...){
 		expired = 1;
 	}
-	return expired;
+	return expired;*/
+	return 0;
 }
 
 

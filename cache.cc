@@ -184,6 +184,7 @@ void putData(string url, string data){
 		file_lock f_lock(("cache/"+url).c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
 		path path_name = path("cache/"+url);
+		cout << path_name.parent_path() << endl;
 		create_directories(path_name.parent_path());
 		ofstream file;
 		file.open(("cache/"+url).c_str(),ios::trunc);

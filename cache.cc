@@ -187,14 +187,14 @@ void putData(string url, string data){
 		string s_parent = ss.str();
 		ofstream _file;
 		if(!exists(path_name)){
-			_file.open((path_name.native_file_string().c_str(),ios::trunc);
+			_file.open(path_name.native_file_string().c_str(),ios::trunc);
 			_file.close();
 			_file.flush();
 		}
 		create_directories(s_parent);
 		file_lock f_lock(path_name.native_file_string().c_str());
 		sharable_lock<file_lock> sh_lock(f_lock);
-		ofstream _file;
+		ofstream file;
 		file.open(path_name.native_file_string().c_str(),ios::trunc);
 		file << data;
 		file.close();

@@ -4,15 +4,16 @@ LDFLAGS=
 SOURCES=http-proxy.cc receive-timeout.cc cache.cc connection-handler.cc http-headers.cc http-request.cc http-response.cc web-request.cc
 #SOURCES=tester.cc
 OBJECTS=$(SOURCES:.cc=.o)
-EXECUTABLE=build/http-proxy
 BOOST_PATH= -L/u/cs/grad/yingdi/boost/lib
-BOOST_LINK_FLAGS=-lboost_filesystem-mt -lboost_date_time-mt 
+BOOST_LINK_FLAGS=-lboost_filesystem-mt -lboost_date_time-mt
+BIN_DIR=build/
+EXECUTABLE=$(BIN_DIR)/http-proxy
 
-build/http-proxy: build
-	cd build && touch $@
+$(BIN_DIR)/http-proxy: $(BIN_DIR)
+	cd $(BIN_DIR) && touch $@
 
 build:
-	mkdir build
+	mkdir $(BIN_DIR)
 
 all: $(SOURCES) $(EXECUTABLE) 
 
@@ -24,4 +25,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 	
 clean:
-	rm -rf *o build/http-proxy
+	rm -rf build

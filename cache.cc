@@ -18,8 +18,12 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <boost/filesystem.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/interprocess/sync/file_lock.hpp>
+#include <boost/interprocess/sync/sharable_lock.hpp>
 
 using namespace boost::filesystem;
+using namespace boost::interprocess;
 
 #define BUFFER_SIZE 1024
 using namespace std;
@@ -146,13 +150,10 @@ string SaveToCache(string buffer, string url){
 			}
 			case 200: {
 				if(twoH && !isExpired(response -> FindHeader("Expires"))){
-					if(putData(url, buffer)){
-						cout << "Response saved to cache" << endl;
-					}else{
-						cout << "Failed saving response to file" << endl;
-					}
+					cout << getpid() << ": Saving to cache" << endl;
+					putData(url, buffer);
 				}else{
-					cout<< getpid() << ": Document expired: "<< response -> FindHeader("Expires") <<". Not saved!" << endl;
+					cout << getpid() << ": Document expired: "<< response -> FindHeader("Expires") <<". Not saved!" << endl;
 				}
 			}
 		}
@@ -172,53 +173,45 @@ string GetErrorPage(int errorNumber){
 }
 
 
-/**
-	This function gets the base directory of a string
-	IN: cache/a/
-	OUT: cache/
-	OUT ARG: a/
-*/
-string GetBaseDir(string& s){
-	char const * tmp = s.c_str();
-	string r = "";
-	for(unsigned int i=0; i<s.length(); i++){
-		if(tmp[i]=='/'){ 
-			s = string(s,i+1,s.length());
-			return r+"/";
-		}
-		r += tmp[i];
-	}
-	return "";
-}
 
-
-/**
-	Create a directory tree
-	Can be any path, relative or absolute. It will only try, it doesn't throw erros
-	if it doesn't have permission or the directory is already there.
-	IN: "cache/a/b/c"
-	SIDE EFECT: Will create directory cache/a/b/
-	NOTE: A final slash is needed to create cache/a/b/c/
-	IT will go down to the last leave, even if there are errors.
-	This because it can be called when the directories are already there.
-*/
-void MakeTreeDir(string missing){
-	string done = "";
-	string tmp = "";
-	while((tmp = GetBaseDir(missing)).compare("")!=0){
-		done+=tmp;
-		mkdir(done.c_str(), 0777);
-	}
-}
 
 /**
 	Write/Get data from/to files
 */
 
-int putData(string path, string data){
-	create_directories(path);
+void putData(string path, string data){
+	try{
+		file_lock f_lock("cache/"+path);
+		sharable_lock<file_lock> sh_lock(f_lock);
+		path path_name = path("cache/"+path);
+		create_directories(path_name.parent_path());
+		ofstream file;
+		file.open(("cache/"+url).c_str(),ios::trunc);
+		file << data;
+		file.close();
+		file.flush();
+	}catch(...){
+	}
 }
 
 string getData(string filename){
-	
+	string contents = "";
+	try{
+		file_lock f_lock("cache/"+path);
+		sharable_lock<file_lock> sh_lock(f_lock);
+		ifstream in(filename.c_str(), ios::in | ios::binary);
+		if(in){
+    		in.seekg(0, ios::end);
+    		int pointer = in.tellg();
+    		if(pointer<1) return "";
+    		contents.resize(pointer);
+    		in.seekg(0, ios::beg);
+    		in.read(&contents[0], contents.size());
+    		in.close();
+    		in.flush()
+  		}
+	}catch(...){
+		contents = "";
+	}
+	return contents;
 }

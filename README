@@ -9,7 +9,7 @@ $ make clean
 
 IMPLEMENTATION
 ======================
-Daniel's
+Jia Dan (Daniel)'s
 connection-handler.h: handles all the connection setup and teardown.
 	serverStartListen - opens up listening port and starts listening on the specified port
 	serverNegotiateClientConnection - sets up the connection to remote host for getting data
@@ -17,7 +17,6 @@ connection-handler.h: handles all the connection setup and teardown.
 	serverClientConnection (deprecated) - gets client requests and fowards to remote host. Instead of handling
 all client request forwarding in one function, the code has been copied to the ProcessRequest function so
 threads are easier to implement.
-
 
 Orlando's
 cache.h: This file provides the function prototypes implemented in cache.cc. 
@@ -34,7 +33,7 @@ web-request.h: This file provides a function prototype implemented in web-reques
 and read from it the incoming response. It then returns whatever SaveToCache returns.
 
 Kunaal's
-Main function: This is the main function, and is responsible for creating the socket, binding 
+*Main function: This is the main function, and is responsible for creating the socket, binding 
 it and listening for incoming connnections on the given port (14805). It also contains the main
 loop which accepts up to 10 incoming connections. Each connection is persistent and creates a 
 separate process. An array is used to track the live processes to ensure that the number of 

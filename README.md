@@ -6,7 +6,7 @@ This is a simple HTTP Proxy made in C++
 Preconditions:
 Usable port: 14805
 Permissions to write on the directory where the project is. Plus all directories beneath it.
-Boost libraries under /u/cs/grad/yingdi/boost/ 
+Boost libraries under /u/cs/grad/yingdi/boost/
 
 How to use skeleton
 ===================

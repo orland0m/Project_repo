@@ -9,6 +9,16 @@ $ make clean
 
 IMPLEMENTATION
 ======================
+Daniel's
+connection-handler.h: handles all the connection setup and teardown.
+	serverStartListen - opens up listening port and starts listening on the specified port
+	serverNegotiateClientConnection - sets up the connection to remote host for getting data
+	serverRetrieveRemoteData - gets the specified file from the remote host after connection has been set up
+	serverClientConnection (deprecated) - gets client requests and fowards to remote host. Instead of handling
+all client request forwarding in one function, the code has been copied to the ProcessRequest function so
+threads are easier to implement.
+
+
 Orlando's
 cache.h: This file provides the function prototypes implemented in cache.cc. 
 	SaveToCache(data,url) processes all incoming responses and decides

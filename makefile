@@ -29,4 +29,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 	
 clean:
-	rm -rf build *o
+	rm -rf build 2>/dev/null

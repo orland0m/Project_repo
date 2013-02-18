@@ -1,0 +1,32 @@
+GENERAL
+======================
+To compile and run the proxy:
+$ cd Project_repo
+$ make
+$ build/http-proxy
+$ make clean
+
+
+IMPLEMENTATION
+======================
+Orlando's
+cache.h: This file provides the function prototypes implemented in cache.cc. 
+	SaveToCache(data,url) processes all incoming responses and decides
+if they can be cached: They have a 200 status and have an expiration date older than the
+current date.
+	GetDataFromCache(request,returnExpired) returns empty
+string if the file doesn't exist, or if the file has expired (In which case adds the
+if-modified-since header to the request).
+All file operations use boost's lock features to avoid race conditions. All date operations
+are also performed using boost's libraries.
+web-request.h: This file provides a function prototype implemented in web-request.cc.
+	GetFromRemoteServer(request,socket) uses the provided socket to send data to the web server
+and read from it the incoming response. It then returns whatever SaveToCache returns.
+
+Team's
+	ProcessRequest(request, flag) will return an http response ready to be sent to de client.
+It takes a request. The second argument (out) is set to 1 if the connection has to be closed
+	HandleClientConnection(socket) will handle a connection with a client. This function will
+terminate the connection until the client decides or an error occurs.
+	receive-timeout.h:
+	recvtimeout(int,char*,int) contains the function used to call recv with a timeout of 30 seconds.

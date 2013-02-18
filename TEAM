@@ -3,10 +3,8 @@
 -connection-handler.cc
 
 ===Orlando Miramontes:
-Cache functionality
 -cache.h
 -cache.cc
-Web request functionality using already existing file descriptor
 -web-request.h
 -web-request.cc
 -makefile

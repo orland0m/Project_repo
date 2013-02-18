@@ -18,7 +18,6 @@ Due to restrictions on lnxsrv, several steps necessary to compile and run (if yo
     export PATH=/usr/local/cs/bin:$PATH
     export LD_LIBRARY_PATH=/u/cs/grad/yingdi/boost/lib:/usr/local/lib64/:$LD_LIBRARY_PATH
 
-
 2. To build/rebuild the code
 
     make clean && make
@@ -26,4 +25,5 @@ Due to restrictions on lnxsrv, several steps necessary to compile and run (if yo
 3. All compiled executables are located in build/, so you can run them as this:
 
     build/http-proxy
+
 
